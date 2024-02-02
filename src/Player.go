@@ -12,6 +12,7 @@ type Player struct {
 	angle    float64
 	camera   *Camera
 	curLevel string
+	speed    float64
 }
 
 func (p *Player) update() {
@@ -22,12 +23,12 @@ func (p *Player) update() {
 		p.angle++
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyW) {
-		p.x += math.Cos(to_radians(p.angle)) * 2
-		p.y += math.Sin(to_radians(p.angle)) * 2
+		p.x += math.Cos(to_radians(p.angle)) * p.speed
+		p.y += math.Sin(to_radians(p.angle)) * p.speed
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyS) {
-		p.x -= math.Cos(to_radians(p.angle)) * 2
-		p.y -= math.Sin(to_radians(p.angle)) * 2
+		p.x -= math.Cos(to_radians(p.angle)) * p.speed
+		p.y -= math.Sin(to_radians(p.angle)) * p.speed
 	}
 
 	bound_angle(&p.angle)
