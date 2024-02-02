@@ -16,18 +16,18 @@ type Player struct {
 
 func (p *Player) update() {
 	if ebiten.IsKeyPressed(ebiten.KeyA) {
-		p.angle++
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyD) {
 		p.angle--
 	}
+	if ebiten.IsKeyPressed(ebiten.KeyD) {
+		p.angle++
+	}
 	if ebiten.IsKeyPressed(ebiten.KeyW) {
-		p.x += math.Sin(to_radians(p.angle)) * 2
-		p.y += math.Cos(to_radians(p.angle)) * 2
+		p.x += math.Cos(to_radians(p.angle)) * 2
+		p.y += math.Sin(to_radians(p.angle)) * 2
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyS) {
-		p.x -= math.Sin(to_radians(p.angle)) * 2
-		p.y -= math.Cos(to_radians(p.angle)) * 2
+		p.x -= math.Cos(to_radians(p.angle)) * 2
+		p.y -= math.Sin(to_radians(p.angle)) * 2
 	}
 
 	bound_angle(&p.angle)

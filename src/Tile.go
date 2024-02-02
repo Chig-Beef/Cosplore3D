@@ -1,11 +1,14 @@
 package main
 
+import "image/color"
+
 type Tile struct {
-	x    float64
-	y    float64
-	w    float64
-	h    float64
-	code uint8
+	x     float64
+	y     float64
+	w     float64
+	h     float64
+	code  uint8
+	color color.Color
 }
 
 func (t *Tile) check_hit(x, y int) bool {

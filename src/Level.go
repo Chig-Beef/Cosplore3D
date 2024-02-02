@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"image/color"
 	"log"
 	"os"
 	"strconv"
@@ -48,12 +49,14 @@ func load_levels(tileSize float64) map[string]Level {
 				if err != nil {
 					log.Fatal("failed to load a level correctly")
 				}
+				clr := get_color(uint8(code))
 				tiles[row] = append(tiles[row], Tile{
 					float64(col) * tileSize,
 					float64(row) * tileSize,
 					tileSize,
 					tileSize,
 					uint8(code),
+					clr,
 				})
 			}
 		}
@@ -61,6 +64,23 @@ func load_levels(tileSize float64) map[string]Level {
 		levels[lName] = Level{lName, tiles}
 	}
 	return levels
+}
+
+func get_color(code uint8) color.Color {
+	switch code {
+	case 0:
+		return color.Black
+	case 1:
+		return color.White
+	case 2:
+		return color.RGBA{255, 0, 0, 255}
+	case 3:
+		return color.RGBA{0, 255, 0, 255}
+	case 4:
+		return color.RGBA{0, 0, 255, 255}
+	default:
+		return color.Black
+	}
 }
 
 func (l *Level) get_solid_tiles() []Tile {

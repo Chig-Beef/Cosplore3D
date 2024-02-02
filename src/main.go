@@ -6,6 +6,7 @@ import (
 	"math"
 
 	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/ebitenutil"
 )
 
 const (
@@ -27,6 +28,7 @@ func (g *Game) Update(screen *ebiten.Image) error {
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.Fill(color.Black)
+	ebitenutil.DrawRect(screen, 0, screenHeight/2, screenWidth, screenHeight/2, color.Gray{32})
 	g.player.draw(g, screen)
 }
 
@@ -62,11 +64,16 @@ func to_radians(angle float64) float64 {
 	return angle * math.Pi / 180.0
 }
 
-func bound_angle(angle *float64) {
+func to_degrees(angle float64) float64 {
+	return angle * 180.0 / math.Pi
+}
+
+func bound_angle(angle *float64) float64 {
 	for *angle < 0 {
 		*angle += 360
 	}
 	for *angle > 360 {
 		*angle -= 360
 	}
+	return *angle
 }

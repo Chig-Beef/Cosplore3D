@@ -41,129 +41,280 @@ func (c *Camera) draw_2D(level Level, screen *ebiten.Image) {
 		}
 	}
 
+	ebitenutil.DrawLine(output2D, 100+math.Cos(to_radians(c.angle))*10, 100+math.Sin(to_radians(c.angle))*10, 100, 100, color.RGBA{0, 0, 255, 255})
+
+	//ray_length := 64.0
+
+	//fmt.Println(to_degrees(math.Atan((-float64(screenWidth)/2.0 + float64(0)) / (float64(screenWidth) / 2.0))))
+	//fmt.Println(to_degrees(math.Atan((-float64(screenWidth)/2.0 + float64(screenWidth)) / (float64(screenWidth) / 2.0))))
+
+	/*for i := 0; i < screenWidth; i += 30 {
+		newAngle := c.angle - to_degrees(math.Atan((float64(i)-float64(screenWidth)/2.0)/(float64(screenWidth)/2.0)))
+		bound_angle(&newAngle)
+
+		ebitenutil.DrawLine(output2D, 100+math.Sin(to_radians(newAngle))*ray_length, 100+math.Cos(to_radians(newAngle))*ray_length, 100, 100, color.White)
+	}*/
+
+	tiles := level.get_solid_tiles()
+
+	var dof int
+	var rx, ry, ra, xo, yo, aTan, nTan, hx, hy, vx, vy, disT float64
+	disV, disH := 10_000.0, 10_000.0
+
+	ra = c.angle - c.fov/2.0
+	bound_angle(&ra)
+
+	for r := 0; r < int(c.fov); r++ {
+
+		// Hor Line Check
+		dof = 0
+		aTan = -1 / math.Tan(to_radians(ra))
+
+		if ra > 180 { // Looking up
+			ry = c.y - float64(int(c.y)%tileSize)
+			rx = (c.y-ry)*aTan + c.x
+			yo = -tileSize
+			xo = -yo * aTan
+		} else if ra < 180 { // Looking down
+			ry = c.y - float64(int(c.y)%tileSize) + tileSize
+			rx = (c.y-ry)*aTan + c.x
+			yo = tileSize
+			xo = -yo * aTan
+		} else {
+			rx = c.x
+			ry = c.y
+			dof = 8
+		}
+
+		for dof < 8 {
+			hit := false
+			for i := 0; i < len(tiles); i++ {
+				if tiles[i].check_hit(int(rx), int(ry)) {
+					dof = 8
+					hit = true
+					hx = rx
+					hy = ry
+					disH = math.Sqrt(math.Pow(hx-c.x, 2) + math.Pow(hy-c.y, 2))
+					break
+				}
+			}
+			if hit {
+				break
+			}
+
+			rx += xo
+			ry += yo
+			dof++
+		}
+
+		//ebitenutil.DrawLine(output2D, 100, 100, (hx-c.x)/8.0+100, (hy-c.y)/8.0+100, color.RGBA{255, 0, 0, 255})
+
+		// Ver Line Check
+		dof = 0
+		nTan = -math.Tan(to_radians(ra))
+
+		if ra > 90 && ra < 270 { // Looking left
+			rx = c.x - float64(int(c.x)%tileSize)
+			ry = (c.x-rx)*nTan + c.y
+			xo = -tileSize
+			yo = -xo * nTan
+		} else if ra < 90 || ra > 270 { // Looking right
+			rx = c.x - float64(int(c.x)%tileSize) + tileSize
+			ry = (c.x-rx)*nTan + c.y
+			xo = tileSize
+			yo = -xo * nTan
+		} else if ra == 180 || ra == 0 {
+			rx = c.x
+			ry = c.y
+			dof = 8
+		}
+
+		for dof < 8 {
+			hit := false
+			for i := 0; i < len(tiles); i++ {
+				if tiles[i].check_hit(int(rx), int(ry)) {
+					dof = 8
+					hit = true
+					vx = rx
+					vy = ry
+					disV = math.Sqrt(math.Pow(vx-c.x, 2) + math.Pow(vy-c.y, 2))
+					break
+				}
+			}
+			if hit {
+				break
+			}
+
+			rx += xo
+			ry += yo
+			dof++
+		}
+
+		//ebitenutil.DrawLine(output2D, 100, 100, (vx-c.x)/8.0+100, (vy-c.y)/8.0+100, color.RGBA{0, 255, 0, 255})
+
+		if disV < disH {
+			rx = vx
+			ry = vy
+			disT = disV
+		} else {
+			rx = hx
+			ry = hy
+			disT = disH
+		}
+
+		if disT != 10_000.0 {
+			ebitenutil.DrawLine(output2D, 100, 100, (rx-c.x)/8.0+100, (ry-c.y)/8.0+100, color.RGBA{0, 255, 0, 255})
+		}
+
+		ra += 1
+		bound_angle(&ra)
+	}
+
 	screen.DrawImage(output2D, &ebiten.DrawImageOptions{})
 }
 
 func (c *Camera) draw_world(level Level, screen *ebiten.Image) {
-	// How many degrees between each ray
-	angleDif := c.fov / screenWidth
 
-	// Get all the tiles that can be hit (eg. code == 1)
 	tiles := level.get_solid_tiles()
 
-	newAngle := c.angle + c.fov/2.0
-	bound_angle(&newAngle)
+	var ra float64
 
-	for i := 0; i < screenWidth; i++ {
-		tile, d := c.ray_cast(newAngle, tiles)
-		newAngle -= angleDif
-		bound_angle(&newAngle)
-		if tile == (Tile{}) || d > screenHeight {
-			continue
+	ra = c.angle - c.fov/2.0
+	bound_angle(&ra)
+
+	ri := c.fov / float64(screenWidth)
+
+	for r := 0; r < int(screenWidth); r++ {
+
+		t, disT := c.ray_cast(ra, tiles)
+
+		a := c.angle - ra
+		bound_angle(&a)
+		if a > 180 {
+			a -= 360
 		}
-		ebitenutil.DrawLine(screen, float64(i), d/2, float64(i), screenHeight-d/2, color.White)
 
-		//fmt.Println("Cycle")
+		disT *= math.Cos(to_radians(a))
+
+		lineH := (float64(tileSize) * screenHeight) / disT
+		if lineH == screenHeight {
+			lineH = screenHeight
+		}
+
+		lineX := screenWidth - (a/c.fov*screenWidth + screenWidth/2.0)
+
+		ebitenutil.DrawLine(screen, lineX, float64(screenHeight)/2.0-lineH/2.0, lineX, float64(screenHeight)/2.0+lineH/2.0, t.color)
+
+		ra += ri
+		bound_angle(&ra)
 	}
 }
 
-func (c *Camera) ray_cast(angle float64, tiles []Tile) (Tile, float64) {
-	x := c.x
-	y := c.y
+func (c *Camera) ray_cast(ra float64, tiles []Tile) (Tile, float64) {
+	var dof int
+	var rx, ry, xo, yo, aTan, nTan, hx, hy, vx, vy float64
+	disV, disH := 10_000.0, 10_000.0
+	var disT float64
+	var vt, ht, tt Tile
 
-	var dx, dy float64
+	// Hor Line Check
+	dof = 0
+	aTan = -1 / math.Tan(to_radians(ra))
 
-	// Move to the closest tile border
-	if angle < 90 || angle > 270 {
-		dy = float64(tileSize - (int(y) % tileSize))
+	if ra > 180 && ra != 360 { // Looking up
+		ry = c.y - float64(int(c.y)%tileSize)
+		rx = (c.y-ry)*aTan + c.x
+		yo = -tileSize
+		xo = -yo * aTan
+	} else if ra < 180 && ra != 0 { // Looking down
+		ry = c.y - float64(int(c.y)%tileSize) + tileSize
+		rx = (c.y-ry)*aTan + c.x
+		yo = tileSize
+		xo = -yo * aTan
 	} else {
-		dy = -float64(int(y) % tileSize)
-	}
-	if angle < 180 {
-		dx = float64(tileSize - (int(x) % tileSize))
-	} else {
-		dx = -float64(int(x) % tileSize)
+		rx = c.x
+		ry = c.y
+		dof = 8
 	}
 
-	// Make sure we are going to a new tile border
-	if dy == 0 {
-		if angle < 90 || angle > 270 {
-			dy = tileSize
-		} else {
-			dy = -tileSize
-		}
-	}
-	if dx == 0 {
-		if angle < 180 {
-			dx = tileSize
-		} else {
-			dx = -tileSize
-		}
-	}
-
-	if math.Abs(math.Cos(to_radians(angle))/dy) >= math.Abs(math.Sin(to_radians(angle))/dx) {
-		dx = dy * math.Sin(to_radians(angle)) / math.Cos(to_radians(angle))
-	} else {
-		dy = dx * math.Cos(to_radians(angle)) / math.Sin(to_radians(angle))
-	}
-
-	y += dy
-	x += dx
-	d := math.Sqrt(math.Pow(x-c.x, 2) + math.Pow(y-c.y, 2))
-
-	for d < c.dov {
-		//fmt.Println(d)
+	for dof < 8 {
+		hit := false
 		for i := 0; i < len(tiles); i++ {
-			if tiles[i].check_hit(int(x), int(y)) {
-				return tiles[i], d
+			if tiles[i].check_hit(int(rx), int(ry)) {
+				dof = 8
+				hit = true
+				hx = rx
+				hy = ry
+				disH = math.Sqrt(math.Pow(hx-c.x, 2) + math.Pow(hy-c.y, 2))
+				ht = tiles[i]
+				break
 			}
 		}
-
-		// Move to the closest tile border
-		if angle < 90 || angle > 270 {
-			dy = float64(tileSize - (int(y) % tileSize))
-		} else {
-			dy = -float64(int(y) % tileSize)
-		}
-		if angle < 180 {
-			dx = float64(tileSize - (int(x) % tileSize))
-		} else {
-			dx = -float64(int(x) % tileSize)
-		}
-		//fmt.Println("a", dx, dy)
-
-		if dy == 0 {
-			if angle < 90 || angle > 270 {
-				dy = tileSize
-			} else {
-				dy = -tileSize
-			}
-		}
-		if dx == 0 {
-			if angle < 180 {
-				dx = tileSize
-			} else {
-				dx = -tileSize
-			}
+		if hit {
+			break
 		}
 
-		//fmt.Println("b", dx, dy)
-
-		if math.Abs(math.Cos(to_radians(angle))/dy) >= math.Abs(math.Sin(to_radians(angle))/dx) {
-			dx = dy * math.Sin(to_radians(angle)) / math.Cos(to_radians(angle))
-		} else {
-			dy = dx * math.Cos(to_radians(angle)) / math.Sin(to_radians(angle))
-		}
-
-		//fmt.Println("c", dx, dy)
-
-		y += dy
-		x += dx
-
-		d = math.Sqrt(math.Pow(x-c.x, 2) + math.Pow(y-c.y, 2))
+		rx += xo
+		ry += yo
+		dof++
 	}
 
-	return Tile{}, 0
+	// Ver Line Check
+	dof = 0
+	nTan = -math.Tan(to_radians(ra))
+
+	if ra > 90 && ra < 270 { // Looking left
+		rx = c.x - float64(int(c.x)%tileSize)
+		ry = (c.x-rx)*nTan + c.y
+		xo = -tileSize
+		yo = -xo * nTan
+	} else if ra < 90 || ra > 270 { // Looking right
+		rx = c.x - float64(int(c.x)%tileSize) + tileSize
+		ry = (c.x-rx)*nTan + c.y
+		xo = tileSize
+		yo = -xo * nTan
+	} else if ra == 90 || ra == 270 {
+		rx = c.x
+		ry = c.y
+		dof = 8
+	}
+
+	for dof < 8 {
+		hit := false
+		for i := 0; i < len(tiles); i++ {
+			if tiles[i].check_hit(int(rx), int(ry)) {
+				dof = 8
+				hit = true
+				vx = rx
+				vy = ry
+				disV = math.Sqrt(math.Pow(vx-c.x, 2) + math.Pow(vy-c.y, 2))
+				vt = tiles[i]
+				break
+			}
+		}
+		if hit {
+			break
+		}
+
+		rx += xo
+		ry += yo
+		dof++
+	}
+
+	if disV < disH {
+		//rx = vx
+		//ry = vy
+		disT = disV
+		tt = vt
+	} else {
+		//rx = hx
+		//ry = vy
+		disT = disH
+		tt = ht
+	}
+
+	return tt, disT
+
 }
 
 func (c *Camera) update_props(p *Player) {
