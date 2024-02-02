@@ -71,7 +71,7 @@ func get_color(code uint8) color.Color {
 	case 0:
 		return color.Black
 	case 1:
-		return color.White
+		return color.RGBA{255, 255, 255, 255}
 	case 2:
 		return color.RGBA{255, 0, 0, 255}
 	case 3:
