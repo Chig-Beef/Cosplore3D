@@ -7,14 +7,17 @@ import (
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/hajimehoshi/ebiten"
 )
 
 type Level struct {
-	name string
-	data [][]Tile
+	name    string
+	data    [][]Tile
+	enemies []Enemy
 }
 
-func load_levels(tileSize float64) map[string]Level {
+func load_levels(g *Game, tileSize float64) map[string]Level {
 	levels := make(map[string]Level)
 
 	var levelData [][]string
@@ -42,6 +45,7 @@ func load_levels(tileSize float64) map[string]Level {
 		rawRows := strings.Split(string(rawLevel), "\r\n")
 
 		tiles := [][]Tile{}
+		enemies := []Enemy{}
 		for row := 0; row < len(rawRows); row++ {
 			tiles = append(tiles, []Tile{})
 			for col := 0; col < len(rawRows[row]); col++ {
@@ -49,6 +53,20 @@ func load_levels(tileSize float64) map[string]Level {
 				if err != nil {
 					log.Fatal("failed to load a level correctly")
 				}
+
+				// Enemy
+				if code == 9 {
+					code = 0
+					enemies = append(enemies, Enemy{
+						float64(col)*tileSize + tileSize*0.5,
+						float64(row)*tileSize + tileSize*0.5,
+						[]ebiten.Image{g.images["blob1"]},
+						Player{},
+						100,
+						1,
+					})
+				}
+
 				clr := get_color(uint8(code))
 				tiles[row] = append(tiles[row], Tile{
 					float64(col) * tileSize,
@@ -61,7 +79,7 @@ func load_levels(tileSize float64) map[string]Level {
 			}
 		}
 
-		levels[lName] = Level{lName, tiles}
+		levels[lName] = Level{lName, tiles, enemies}
 	}
 	return levels
 }
@@ -69,7 +87,7 @@ func load_levels(tileSize float64) map[string]Level {
 func get_color(code uint8) color.Color {
 	switch code {
 	case 0:
-		return color.Black
+		return color.RGBA{0, 0, 0, 0}
 	case 1:
 		return color.RGBA{255, 255, 255, 255}
 	case 2:
@@ -79,7 +97,7 @@ func get_color(code uint8) color.Color {
 	case 4:
 		return color.RGBA{0, 0, 255, 255}
 	default:
-		return color.Black
+		return color.RGBA{0, 0, 0, 0}
 	}
 }
 

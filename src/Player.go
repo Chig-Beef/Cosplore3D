@@ -13,14 +13,15 @@ type Player struct {
 	camera   *Camera
 	curLevel string
 	speed    float64
+	haste    float64
 }
 
 func (p *Player) update() {
 	if ebiten.IsKeyPressed(ebiten.KeyA) {
-		p.angle--
+		p.angle -= p.haste
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyD) {
-		p.angle++
+		p.angle += p.haste
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyW) {
 		p.x += math.Cos(to_radians(p.angle)) * p.speed

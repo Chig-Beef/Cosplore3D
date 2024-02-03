@@ -196,6 +196,10 @@ func (c *Camera) draw_world(level Level, screen *ebiten.Image) {
 
 		disT *= math.Cos(to_radians(a))
 
+		if disT > 5_000 || disT < 0.5 {
+			continue
+		}
+
 		lineH := (float64(tileSize) * screenHeight) / disT
 		if lineH == screenHeight {
 			lineH = screenHeight

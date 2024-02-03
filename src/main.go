@@ -19,6 +19,7 @@ type Game struct {
 	levels  map[string]Level
 	player  *Player
 	enemies []Enemy
+	images  map[string]ebiten.Image
 }
 
 func (g *Game) Update(screen *ebiten.Image) error {
@@ -30,6 +31,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	screen.Fill(color.Black)
 	ebitenutil.DrawRect(screen, 0, screenHeight/2, screenWidth, screenHeight/2, color.Gray{32})
 	g.player.draw(g, screen)
+	for i := 0; i < len(g.levels[g.player.curLevel].enemies); i++ {
+		g.levels[g.player.curLevel].enemies[i].draw(screen, *g.player.camera)
+	}
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
@@ -39,7 +43,15 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 func main() {
 	g := &Game{}
 
-	g.levels = load_levels(tileSize)
+	g.images = make(map[string]ebiten.Image)
+
+	img, _, err := ebitenutil.NewImageFromFile("assets/images/blob1.png", ebiten.FilterDefault)
+	if err != nil {
+		log.Fatal(err)
+	}
+	g.images["blob1"] = *img
+
+	g.levels = load_levels(g, tileSize)
 
 	camera := Camera{}
 	camera.fov = 90
@@ -51,6 +63,8 @@ func main() {
 		0,
 		&camera,
 		"test",
+		5,
+		2,
 	}
 
 	ebiten.SetWindowSize(screenWidth, screenHeight)
