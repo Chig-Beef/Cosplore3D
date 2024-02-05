@@ -105,7 +105,7 @@ func (l *Level) get_solid_tiles() []Tile {
 	tiles := []Tile{}
 
 	for row := 0; row < len(l.data); row++ {
-		for col := 0; col < len(l.data); col++ {
+		for col := 0; col < len(l.data[row]); col++ {
 			if l.data[row][col].code != 0 {
 				tiles = append(tiles, l.data[row][col])
 			}
