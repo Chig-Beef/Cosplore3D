@@ -12,8 +12,8 @@ type Camera struct {
 	x     float64
 	y     float64
 	angle float64
-	fov   float64
-	dov   float64
+	fov   float64 // Field Of View
+	dov   float64 // Depth Of View
 }
 
 func (c *Camera) draw_2D(level Level, screen *ebiten.Image) {
@@ -43,23 +43,11 @@ func (c *Camera) draw_2D(level Level, screen *ebiten.Image) {
 
 	ebitenutil.DrawLine(output2D, 100+math.Cos(to_radians(c.angle))*10, 100+math.Sin(to_radians(c.angle))*10, 100, 100, color.RGBA{0, 0, 255, 255})
 
-	//ray_length := 64.0
-
-	//fmt.Println(to_degrees(math.Atan((-float64(screenWidth)/2.0 + float64(0)) / (float64(screenWidth) / 2.0))))
-	//fmt.Println(to_degrees(math.Atan((-float64(screenWidth)/2.0 + float64(screenWidth)) / (float64(screenWidth) / 2.0))))
-
-	/*for i := 0; i < screenWidth; i += 30 {
-		newAngle := c.angle - to_degrees(math.Atan((float64(i)-float64(screenWidth)/2.0)/(float64(screenWidth)/2.0)))
-		bound_angle(&newAngle)
-
-		ebitenutil.DrawLine(output2D, 100+math.Sin(to_radians(newAngle))*ray_length, 100+math.Cos(to_radians(newAngle))*ray_length, 100, 100, color.White)
-	}*/
-
 	tiles := level.get_solid_tiles()
 
 	var dof int
 	var rx, ry, ra, xo, yo, aTan, nTan, hx, hy, vx, vy, disT float64
-	disV, disH := 10_000.0, 10_000.0
+	disV, disH := c.dov, c.dov
 
 	ra = c.angle - c.fov/2.0
 	bound_angle(&ra)
@@ -70,12 +58,12 @@ func (c *Camera) draw_2D(level Level, screen *ebiten.Image) {
 		dof = 0
 		aTan = -1 / math.Tan(to_radians(ra))
 
-		if ra > 180 { // Looking up
+		if ra > 180 && ra != 360 { // Looking up
 			ry = c.y - float64(int(c.y)%tileSize)
 			rx = (c.y-ry)*aTan + c.x
 			yo = -tileSize
 			xo = -yo * aTan
-		} else if ra < 180 { // Looking down
+		} else if ra < 180 && ra != 0 { // Looking down
 			ry = c.y - float64(int(c.y)%tileSize) + tileSize
 			rx = (c.y-ry)*aTan + c.x
 			yo = tileSize
@@ -123,7 +111,7 @@ func (c *Camera) draw_2D(level Level, screen *ebiten.Image) {
 			ry = (c.x-rx)*nTan + c.y
 			xo = tileSize
 			yo = -xo * nTan
-		} else if ra == 180 || ra == 0 {
+		} else if ra == 90 || ra == 270 {
 			rx = c.x
 			ry = c.y
 			dof = 8
@@ -162,7 +150,7 @@ func (c *Camera) draw_2D(level Level, screen *ebiten.Image) {
 			disT = disH
 		}
 
-		if disT != 10_000.0 {
+		if disT <= c.dov && disT >= 0.5 {
 			ebitenutil.DrawLine(output2D, 100, 100, (rx-c.x)/8.0+100, (ry-c.y)/8.0+100, color.RGBA{0, 255, 0, 255})
 		}
 
@@ -184,9 +172,15 @@ func (c *Camera) draw_world(level Level, screen *ebiten.Image) {
 
 	ri := c.fov / float64(screenWidth)
 
-	for r := 0; r < int(screenWidth); r++ {
+	for r := 0; r < screenWidth; r++ {
 
 		t, disT := c.ray_cast(ra, tiles)
+
+		if t == (Tile{}) {
+			ra += ri
+			bound_angle(&ra)
+			continue
+		}
 
 		a := c.angle - ra
 		bound_angle(&a)
@@ -196,7 +190,9 @@ func (c *Camera) draw_world(level Level, screen *ebiten.Image) {
 
 		disT *= math.Cos(to_radians(a))
 
-		if disT > 5_000 || disT < 0.5 {
+		if disT > c.dov || disT < 0.5 {
+			ra += ri
+			bound_angle(&ra)
 			continue
 		}
 
@@ -217,7 +213,7 @@ func (c *Camera) draw_world(level Level, screen *ebiten.Image) {
 func (c *Camera) ray_cast(ra float64, tiles []Tile) (Tile, float64) {
 	var dof int
 	var rx, ry, xo, yo, aTan, nTan, hx, hy, vx, vy float64
-	disV, disH := 10_000.0, 10_000.0
+	disV, disH := c.dov, c.dov
 	var disT float64
 	var vt, ht, tt Tile
 
@@ -305,7 +301,7 @@ func (c *Camera) ray_cast(ra float64, tiles []Tile) (Tile, float64) {
 		dof++
 	}
 
-	if disV < disH {
+	if disV < disH && vt != (Tile{}) {
 		//rx = vx
 		//ry = vy
 		disT = disV
