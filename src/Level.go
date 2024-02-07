@@ -26,7 +26,10 @@ func (l Level) draw_floor_sky(screen *ebiten.Image) {
 }
 
 func load_levels(g *Game, tileSize float64) map[string]Level {
-	create_image_columns(g, []string{"cosplorerWall"})
+	create_image_columns(g, []string{
+		"cosplorerWall",
+		"ankaranWall",
+	})
 
 	levels := make(map[string]Level)
 
@@ -73,12 +76,26 @@ func load_levels(g *Game, tileSize float64) map[string]Level {
 				if code == 9 {
 					code = 0
 					enemies = append(enemies, Enemy{
-						float64(col)*tileSize + tileSize*0.5,
-						float64(row)*tileSize + tileSize*0.5,
+						tileSize * (float64(col) + 0.5),
+						tileSize * (float64(row) + 0.5),
 						[]*ebiten.Image{g.images["blob1"]},
 						Player{},
 						100,
 						1,
+						1,
+						60,
+					})
+				} else if code == 8 {
+					code = 0
+					enemies = append(enemies, Enemy{
+						tileSize * (float64(col) + 0.5),
+						tileSize * (float64(row) + 0.5),
+						[]*ebiten.Image{g.images["blob1"]},
+						Player{},
+						200,
+						2,
+						2,
+						30,
 					})
 				}
 
@@ -89,7 +106,7 @@ func load_levels(g *Game, tileSize float64) map[string]Level {
 					tileSize,
 					tileSize,
 					uint8(code),
-					g.imageColumns["cosplorerWall"],
+					g.imageColumns[get_tile_image(uint8(code))],
 				})
 			}
 		}
@@ -100,20 +117,20 @@ func load_levels(g *Game, tileSize float64) map[string]Level {
 	return levels
 }
 
-func get_color(code uint8) color.Color {
+func get_tile_image(code uint8) string {
 	switch code {
 	case 0:
-		return color.RGBA{0, 0, 0, 0}
+		return ""
 	case 1:
-		return color.RGBA{255, 255, 255, 255}
+		return "cosplorerWall"
 	case 2:
-		return color.RGBA{255, 0, 0, 255}
+		return "ankaranWall"
 	case 3:
-		return color.RGBA{0, 255, 0, 255}
+		return "cosplorerWall"
 	case 4:
-		return color.RGBA{0, 0, 255, 255}
+		return "cosplorerWall"
 	default:
-		return color.RGBA{0, 0, 0, 0}
+		return "ankaranWall"
 	}
 }
 
@@ -138,49 +155,33 @@ func get_fs_color(data string) (color.RGBA, color.RGBA) {
 		log.Fatal("need a floor and sky color")
 	}
 
+	colorArray := [3]uint8{0, 0, 0}
+
 	fRaw := strings.Split(splitData[0], ",")
 	if len(fRaw) != 3 {
 		log.Fatal("3 values in color needed, RGB")
 	}
-
-	r, err := strconv.Atoi(fRaw[0])
-	if err != nil {
-		log.Fatal("invalid number for color")
+	for i := 0; i < 3; i++ {
+		c, err := strconv.Atoi(fRaw[i])
+		if err != nil {
+			log.Fatal("invalid number for color")
+		}
+		colorArray[i] = uint8(c)
 	}
-
-	g, err := strconv.Atoi(fRaw[1])
-	if err != nil {
-		log.Fatal("invalid number for color")
-	}
-
-	b, err := strconv.Atoi(fRaw[2])
-	if err != nil {
-		log.Fatal("invalid number for color")
-	}
-
-	floorColor := color.RGBA{uint8(r), uint8(g), uint8(b), 255}
+	floorColor := color.RGBA{colorArray[0], colorArray[1], colorArray[2], 255}
 
 	sRaw := strings.Split(splitData[1], ",")
 	if len(fRaw) != 3 {
 		log.Fatal("3 values in color needed, RGB")
 	}
-
-	r, err = strconv.Atoi(sRaw[0])
-	if err != nil {
-		log.Fatal("invalid number for color")
+	for i := 0; i < 3; i++ {
+		c, err := strconv.Atoi(sRaw[i])
+		if err != nil {
+			log.Fatal("invalid number for color")
+		}
+		colorArray[i] = uint8(c)
 	}
-
-	g, err = strconv.Atoi(sRaw[1])
-	if err != nil {
-		log.Fatal("invalid number for color")
-	}
-
-	b, err = strconv.Atoi(sRaw[2])
-	if err != nil {
-		log.Fatal("invalid number for color")
-	}
-
-	skyColor := color.RGBA{uint8(r), uint8(g), uint8(b), 255}
+	skyColor := color.RGBA{colorArray[0], colorArray[1], colorArray[2], 255}
 
 	return floorColor, skyColor
 }

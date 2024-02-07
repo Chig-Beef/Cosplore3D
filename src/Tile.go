@@ -53,6 +53,8 @@ func get_color_with_distance(c color.Color, d float64) color.Color {
 }
 
 func create_image_columns(g *Game, keys []string) {
+	g.imageColumns[""] = &[]*ebiten.Image{}
+
 	for _, key := range keys {
 		img := g.images[key]
 

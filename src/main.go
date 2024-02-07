@@ -2,11 +2,11 @@ package main
 
 import (
 	"log"
-	"math"
 
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"github.com/hajimehoshi/ebiten/examples/resources/fonts"
+	"github.com/hajimehoshi/ebiten/inpututil"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/opentype"
 )
@@ -25,13 +25,53 @@ type Game struct {
 	images          map[string]*ebiten.Image
 	imageColumns    map[string]*[]*ebiten.Image
 	fonts           map[string]font.Face
+	curMousePos     [2]int
+	prevMousePos    [2]int
+
+	// Audio
+	musicPlayer   *AudioPlayer
+	musicPlayerCh chan *AudioPlayer
+	errCh         chan error
 }
 
 func (g *Game) Update(screen *ebiten.Image) error {
 	if !g.hasLoadedLevels {
 		g.levels = load_levels(g, tileSize)
 	}
-	g.player.update()
+
+	select {
+	case p := <-g.musicPlayerCh:
+		g.musicPlayer = p
+	case err := <-g.errCh:
+		return err
+	default:
+	}
+
+	if g.musicPlayer != nil {
+		if err := g.musicPlayer.update(g); err != nil {
+			return err
+		}
+	}
+
+	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+		if ebiten.CursorMode() == ebiten.CursorModeCaptured {
+			ebiten.SetCursorMode(ebiten.CursorModeVisible)
+		} else {
+			ebiten.SetCursorMode(ebiten.CursorModeCaptured)
+		}
+	}
+
+	x, y := ebiten.CursorPosition()
+
+	if g.curMousePos == [2]int{} {
+		g.curMousePos = [2]int{1, 1}
+	} else {
+		g.curMousePos = [2]int{x, y}
+	}
+
+	g.player.update(g)
+
+	g.prevMousePos = g.curMousePos
 	return nil
 }
 
@@ -49,6 +89,8 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 func (g *Game) load_fonts() {
+	g.fonts = make(map[string]font.Face)
+
 	tt, err := opentype.Parse(fonts.MPlus1pRegular_ttf)
 	if err != nil {
 		log.Fatal(err)
@@ -67,10 +109,13 @@ func (g *Game) load_fonts() {
 }
 
 func (g *Game) load_images() {
+	g.images = make(map[string]*ebiten.Image)
+
 	load_image(g, "blob1", "blob1")
 	load_image(g, "heart", "heart")
 	load_image(g, "gun", "gun")
 	load_image(g, "cosplorerWall", "cosplorerWall")
+	load_image(g, "ankaranWall", "ankaranWall")
 }
 
 func load_image(g *Game, fName string, mName string) {
@@ -82,10 +127,9 @@ func load_image(g *Game, fName string, mName string) {
 }
 
 func main() {
+	ebiten.SetCursorMode(ebiten.CursorModeCaptured)
 	g := &Game{}
 
-	g.images = make(map[string]*ebiten.Image)
-	g.fonts = make(map[string]font.Face)
 	g.imageColumns = make(map[string]*[]*ebiten.Image)
 
 	g.load_images()
@@ -104,34 +148,18 @@ func main() {
 		tileSize * 3.5,
 		0,
 		&camera,
-		"test",
+		"ankaran",
 		7,
 		3,
 		100,
 		Weapon{},
 	}
 
+	g.init_audio()
+
 	ebiten.SetWindowSize(screenWidth, screenHeight)
 	ebiten.SetWindowTitle("Cosplore3D")
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
 	}
-}
-
-func to_radians(angle float64) float64 {
-	return angle * math.Pi / 180.0
-}
-
-func to_degrees(angle float64) float64 {
-	return angle * 180.0 / math.Pi
-}
-
-func bound_angle(angle *float64) float64 {
-	for *angle < 0 {
-		*angle += 360
-	}
-	for *angle > 360 {
-		*angle -= 360
-	}
-	return *angle
 }

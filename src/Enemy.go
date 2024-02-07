@@ -13,6 +13,8 @@ type Enemy struct {
 	target Player
 	health uint32
 	speed  float64
+	damgae float64
+	roa    uint8
 }
 
 func (e *Enemy) update() {
@@ -32,7 +34,7 @@ func (e *Enemy) draw(screen *ebiten.Image, c Camera) {
 
 	angle -= c.angle
 
-	bound_angle(&angle)
+	angle = bound_angle(angle)
 
 	if angle > c.fov/2.0 && angle < 360-c.fov/2.0 {
 		return

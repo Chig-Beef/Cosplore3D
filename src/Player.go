@@ -22,13 +22,9 @@ type Player struct {
 	weapon   Weapon
 }
 
-func (p *Player) update() {
-	if ebiten.IsKeyPressed(ebiten.KeyA) {
-		p.angle -= p.haste
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyD) {
-		p.angle += p.haste
-	}
+func (p *Player) update(g *Game) {
+	p.angle += float64(g.curMousePos[0]-g.prevMousePos[0]) * p.haste / 10.0
+
 	if ebiten.IsKeyPressed(ebiten.KeyW) {
 		p.x += math.Cos(to_radians(p.angle)) * p.speed
 		p.y += math.Sin(to_radians(p.angle)) * p.speed
@@ -37,8 +33,16 @@ func (p *Player) update() {
 		p.x -= math.Cos(to_radians(p.angle)) * p.speed
 		p.y -= math.Sin(to_radians(p.angle)) * p.speed
 	}
+	if ebiten.IsKeyPressed(ebiten.KeyA) {
+		p.x += math.Cos(to_radians(p.angle-90)) * p.speed
+		p.y += math.Sin(to_radians(p.angle-90)) * p.speed
+	}
+	if ebiten.IsKeyPressed(ebiten.KeyD) {
+		p.x -= math.Cos(to_radians(p.angle-90)) * p.speed
+		p.y -= math.Sin(to_radians(p.angle-90)) * p.speed
+	}
 
-	bound_angle(&p.angle)
+	p.angle = bound_angle(p.angle)
 
 	p.camera.update_props(p)
 }
