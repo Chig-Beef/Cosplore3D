@@ -9,12 +9,20 @@ import (
 	"strings"
 
 	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/ebitenutil"
 )
 
 type Level struct {
-	name    string
-	data    [][]Tile
-	enemies []Enemy
+	name       string
+	data       [][]Tile
+	enemies    []Enemy
+	floorColor color.RGBA
+	skyColor   color.RGBA
+}
+
+func (l Level) draw_floor_sky(screen *ebiten.Image) {
+	screen.Fill(l.skyColor)
+	ebitenutil.DrawRect(screen, 0, screenHeight/2, screenWidth, screenHeight/2, l.floorColor)
 }
 
 func load_levels(g *Game, tileSize float64) map[string]Level {
@@ -44,12 +52,17 @@ func load_levels(g *Game, tileSize float64) map[string]Level {
 		// Now we have a list of strongs as the data
 		rawRows := strings.Split(string(rawLevel), "\r\n")
 
+		floorColor, skyColor := get_fs_color(rawRows[0])
+
+		rawRows = rawRows[1:]
+
 		tiles := [][]Tile{}
 		enemies := []Enemy{}
 		for row := 0; row < len(rawRows); row++ {
 			tiles = append(tiles, []Tile{})
-			for col := 0; col < len(rawRows[row]); col++ {
-				code, err := strconv.Atoi(string(rawRows[row][col]))
+			rawRow := strings.Split(rawRows[row], ",")
+			for col := 0; col < len(rawRow); col++ {
+				code, err := strconv.Atoi(string(rawRow[col]))
 				if err != nil {
 					log.Fatal("failed to load a level correctly")
 				}
@@ -79,7 +92,7 @@ func load_levels(g *Game, tileSize float64) map[string]Level {
 			}
 		}
 
-		levels[lName] = Level{lName, tiles, enemies}
+		levels[lName] = Level{lName, tiles, enemies, floorColor, skyColor}
 	}
 	return levels
 }
@@ -113,4 +126,58 @@ func (l *Level) get_solid_tiles() []Tile {
 	}
 
 	return tiles
+}
+
+func get_fs_color(data string) (color.RGBA, color.RGBA) {
+	splitData := strings.Split(data, "|")
+
+	if len(splitData) != 2 {
+		log.Fatal("need a floor and sky color")
+	}
+
+	fRaw := strings.Split(splitData[0], ",")
+	if len(fRaw) != 3 {
+		log.Fatal("3 values in color needed, RGB")
+	}
+
+	r, err := strconv.Atoi(fRaw[0])
+	if err != nil {
+		log.Fatal("invalid number for color")
+	}
+
+	g, err := strconv.Atoi(fRaw[1])
+	if err != nil {
+		log.Fatal("invalid number for color")
+	}
+
+	b, err := strconv.Atoi(fRaw[2])
+	if err != nil {
+		log.Fatal("invalid number for color")
+	}
+
+	floorColor := color.RGBA{uint8(r), uint8(g), uint8(b), 255}
+
+	sRaw := strings.Split(splitData[1], ",")
+	if len(fRaw) != 3 {
+		log.Fatal("3 values in color needed, RGB")
+	}
+
+	r, err = strconv.Atoi(sRaw[0])
+	if err != nil {
+		log.Fatal("invalid number for color")
+	}
+
+	g, err = strconv.Atoi(sRaw[1])
+	if err != nil {
+		log.Fatal("invalid number for color")
+	}
+
+	b, err = strconv.Atoi(sRaw[2])
+	if err != nil {
+		log.Fatal("invalid number for color")
+	}
+
+	skyColor := color.RGBA{uint8(r), uint8(g), uint8(b), 255}
+
+	return floorColor, skyColor
 }

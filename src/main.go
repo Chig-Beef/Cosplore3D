@@ -1,7 +1,6 @@
 package main
 
 import (
-	"image/color"
 	"log"
 	"math"
 
@@ -32,8 +31,7 @@ func (g *Game) Update(screen *ebiten.Image) error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	screen.Fill(color.Black)
-	ebitenutil.DrawRect(screen, 0, screenHeight/2, screenWidth, screenHeight/2, color.Gray{32})
+	g.levels[g.player.curLevel].draw_floor_sky(screen)
 	g.player.draw(g, screen)
 	for i := 0; i < len(g.levels[g.player.curLevel].enemies); i++ {
 		g.levels[g.player.curLevel].enemies[i].draw(screen, *g.player.camera)
@@ -67,6 +65,7 @@ func (g *Game) load_images() {
 	load_image(g, "blob1", "blob1")
 	load_image(g, "heart", "heart")
 	load_image(g, "gun", "gun")
+	load_image(g, "cosplorerWall", "cosplorerWall")
 }
 
 func load_image(g *Game, fName string, mName string) {
@@ -101,7 +100,7 @@ func main() {
 		tileSize * 3.5,
 		0,
 		&camera,
-		"cosplorer",
+		"test2",
 		7,
 		3,
 		100,
