@@ -9,7 +9,7 @@ import (
 type Enemy struct {
 	x      float64
 	y      float64
-	images []ebiten.Image
+	images []*ebiten.Image
 	target Player
 	health uint32
 	speed  float64
@@ -53,5 +53,5 @@ func (e *Enemy) draw(screen *ebiten.Image, c Camera) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Scale(sW, sH)
 	op.GeoM.Translate(lineX-(sW*float64(ogW)/2.0), screenHeight/2+sH*float64(ogH))
-	screen.DrawImage(&e.images[0], op)
+	screen.DrawImage(e.images[0], op)
 }

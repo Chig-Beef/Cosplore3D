@@ -19,5 +19,5 @@ func (w *Weapon) draw(g *Game, screen *ebiten.Image) {
 
 	op.GeoM.Translate(screenWidth/2.0-(sW*float64(ogW))/2.0, screenHeight/8.0*7-sH*float64(ogH))
 
-	screen.DrawImage(&img, &op)
+	screen.DrawImage(img, &op)
 }

@@ -174,9 +174,9 @@ func (c *Camera) draw_world(level Level, screen *ebiten.Image) {
 
 	for r := 0; r < screenWidth; r++ {
 
-		t, disT := c.ray_cast(ra, tiles)
+		t, disT, rx, ry, isV := c.ray_cast(ra, tiles)
 
-		if t == (Tile{}) {
+		if !t.init {
 			ra += ri
 			bound_angle(&ra)
 			continue
@@ -202,15 +202,60 @@ func (c *Camera) draw_world(level Level, screen *ebiten.Image) {
 		}
 
 		lineX := screenWidth - (a/c.fov*screenWidth + screenWidth/2.0)
+		y := float64(screenHeight)/2.0 - lineH/2.0
 
-		ebitenutil.DrawLine(screen, lineX, float64(screenHeight)/2.0-lineH/2.0, lineX, float64(screenHeight)/2.0+lineH/2.0, get_color_with_distance(t.color, disT))
+		//ebitenutil.DrawLine(screen, lineX, float64(screenHeight)/2.0-lineH/2.0, lineX, float64(screenHeight)/2.0+lineH/2.0, get_color_with_distance(t.color, disT))
 
+		imgs := *t.imageCols
+
+		var subX int
+
+		if isV {
+			subX = int(ry) % tileSize
+
+			if ra < 90 || ra > 270 {
+				subX = tileSize - 1 - subX
+			}
+		} else {
+			subX = int(rx) % tileSize
+
+			if ra > 180 {
+				subX = tileSize - 1 - subX
+			}
+		}
+
+		tx := int(float64(subX) * float64(len(imgs)) / float64(tileSize))
+
+		img := imgs[tx]
+		op := ebiten.DrawImageOptions{}
+
+		op.GeoM.Scale(1, lineH/float64(img.Bounds().Dy()))
+		op.GeoM.Translate(lineX, y)
+		//op.ColorM.ChangeHSV(0, 255, float64(fastInvSqrt(float32(disT)/float32(tileSize))))
+		//op.ColorM.ChangeHSV(0, 0, 1/math.Sqrt(disT/float64(tileSize)))
+		op.ColorM.ChangeHSV(0, 255, float64(fastInvSqrt(float32(int(disT)/tileSize+1))))
+
+		screen.DrawImage(img, &op)
+
+		/*
+			columnImage, _ := ebiten.NewImage(1, int(lineH), ebiten.FilterDefault)
+
+			for i := 0; i < int(lineH); i++ {
+				columnImage.Set(0, i, t.image.At(0, 0))
+			}
+
+			op := ebiten.DrawImageOptions{}
+			op.GeoM.Translate(lineX, y)
+
+			screen.DrawImage(columnImage, &op)
+
+		*/
 		ra += ri
 		bound_angle(&ra)
 	}
 }
 
-func (c *Camera) ray_cast(ra float64, tiles []Tile) (Tile, float64) {
+func (c *Camera) ray_cast(ra float64, tiles []Tile) (Tile, float64, float64, float64, bool) {
 	var dof int
 	var rx, ry, xo, yo, aTan, nTan, hx, hy, vx, vy float64
 	disV, disH := c.dov, c.dov
@@ -301,19 +346,23 @@ func (c *Camera) ray_cast(ra float64, tiles []Tile) (Tile, float64) {
 		dof++
 	}
 
-	if disV < disH && vt != (Tile{}) {
-		//rx = vx
-		//ry = vy
+	var isV bool
+
+	if disV < disH && vt.init {
+		rx = vx
+		ry = vy
 		disT = disV
 		tt = vt
+		isV = true
 	} else {
-		//rx = hx
-		//ry = vy
+		rx = hx
+		ry = vy
 		disT = disH
 		tt = ht
+		isV = false
 	}
 
-	return tt, disT
+	return tt, disT, rx, ry, isV
 
 }
 

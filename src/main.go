@@ -18,14 +18,19 @@ const (
 )
 
 type Game struct {
-	levels  map[string]Level
-	player  *Player
-	enemies []Enemy
-	images  map[string]ebiten.Image
-	fonts   map[string]font.Face
+	hasLoadedLevels bool
+	levels          map[string]Level
+	player          *Player
+	enemies         []Enemy
+	images          map[string]*ebiten.Image
+	imageColumns    map[string]*[]*ebiten.Image
+	fonts           map[string]font.Face
 }
 
 func (g *Game) Update(screen *ebiten.Image) error {
+	if !g.hasLoadedLevels {
+		g.levels = load_levels(g, tileSize)
+	}
 	g.player.update()
 	return nil
 }
@@ -73,19 +78,18 @@ func load_image(g *Game, fName string, mName string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	g.images[mName] = *img
+	g.images[mName] = img
 }
 
 func main() {
 	g := &Game{}
 
-	g.images = make(map[string]ebiten.Image)
+	g.images = make(map[string]*ebiten.Image)
 	g.fonts = make(map[string]font.Face)
+	g.imageColumns = make(map[string]*[]*ebiten.Image)
 
 	g.load_images()
 	g.load_fonts()
-
-	g.levels = load_levels(g, tileSize)
 
 	camera := Camera{
 		0,
@@ -100,7 +104,7 @@ func main() {
 		tileSize * 3.5,
 		0,
 		&camera,
-		"test2",
+		"test",
 		7,
 		3,
 		100,

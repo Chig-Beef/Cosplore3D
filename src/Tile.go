@@ -3,15 +3,18 @@ package main
 import (
 	"image/color"
 	"math"
+
+	"github.com/hajimehoshi/ebiten"
 )
 
 type Tile struct {
-	x     float64
-	y     float64
-	w     float64
-	h     float64
-	code  uint8
-	color color.Color
+	init      bool
+	x         float64
+	y         float64
+	w         float64
+	h         float64
+	code      uint8
+	imageCols *[]*ebiten.Image
 }
 
 func (t *Tile) check_hit(x, y int) bool {
@@ -46,5 +49,25 @@ func get_color_with_distance(c color.Color, d float64) color.Color {
 		uint8(float64(clr.G) / modifier),
 		uint8(float64(clr.B) / modifier),
 		uint8(clr.A),
+	}
+}
+
+func create_image_columns(g *Game, keys []string) {
+	for _, key := range keys {
+		img := g.images[key]
+
+		imgW, imgH := img.Size()
+		images := make([]*ebiten.Image, imgW) // Since we know the size we can initialise with size
+		var newImage *ebiten.Image
+		for i := 0; i < imgW; i++ {
+			newImage, _ = ebiten.NewImage(1, imgH, ebiten.FilterDefault)
+			for j := 0; j < imgH; j++ {
+				clr := img.At(i, j)
+				newImage.Set(0, j, clr)
+			}
+			images[i] = newImage
+		}
+
+		g.imageColumns[key] = &images
 	}
 }

@@ -26,6 +26,8 @@ func (l Level) draw_floor_sky(screen *ebiten.Image) {
 }
 
 func load_levels(g *Game, tileSize float64) map[string]Level {
+	create_image_columns(g, []string{"cosplorerWall"})
+
 	levels := make(map[string]Level)
 
 	var levelData [][]string
@@ -73,27 +75,28 @@ func load_levels(g *Game, tileSize float64) map[string]Level {
 					enemies = append(enemies, Enemy{
 						float64(col)*tileSize + tileSize*0.5,
 						float64(row)*tileSize + tileSize*0.5,
-						[]ebiten.Image{g.images["blob1"]},
+						[]*ebiten.Image{g.images["blob1"]},
 						Player{},
 						100,
 						1,
 					})
 				}
 
-				clr := get_color(uint8(code))
 				tiles[row] = append(tiles[row], Tile{
+					true,
 					float64(col) * tileSize,
 					float64(row) * tileSize,
 					tileSize,
 					tileSize,
 					uint8(code),
-					clr,
+					g.imageColumns["cosplorerWall"],
 				})
 			}
 		}
 
 		levels[lName] = Level{lName, tiles, enemies, floorColor, skyColor}
 	}
+	g.hasLoadedLevels = true
 	return levels
 }
 

@@ -70,7 +70,7 @@ func (p *Player) draw_hud(g *Game, screen *ebiten.Image) {
 
 		op.GeoM.Translate(10*float64(i+1)+newW*float64(i), float64(screenHeight)/8.0*7+10)
 
-		screen.DrawImage(&heartImg, &op)
+		screen.DrawImage(heartImg, &op)
 	}
 
 	text.Draw(screen, strconv.Itoa(int(p.weapon.mag)), g.fonts["ammo"], screenWidth/2.0, screenHeight-10, color.RGBA{196, 32, 32, 255})
