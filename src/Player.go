@@ -47,7 +47,7 @@ func (p *Player) update(g *Game) {
 
 	p.camera.update_props(p)
 
-	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0) {
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0) && p.weapon.curMag > 0 {
 		p.weapon.shoot(p, g.levels[p.curLevel].enemies)
 	}
 
@@ -102,5 +102,5 @@ func (p *Player) draw_hud(g *Game, screen *ebiten.Image) {
 		screen.DrawImage(heartImg, &op)
 	}
 
-	text.Draw(screen, strconv.Itoa(int(p.weapon.mag)), g.fonts["ammo"], screenWidth/2.0, screenHeight-10, color.RGBA{196, 32, 32, 255})
+	text.Draw(screen, strconv.Itoa(int(p.weapon.curMag))+"/"+strconv.Itoa(int(p.weapon.mag)), g.fonts["ammo"], screenWidth/2.0, screenHeight-10, color.RGBA{196, 32, 32, 255})
 }
