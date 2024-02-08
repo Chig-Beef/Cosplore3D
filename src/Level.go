@@ -83,12 +83,14 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 						tileSize * (float64(row) + 0.5),
 						200,
 						200,
+						0,
 						[]*ebiten.Image{g.images["blob1"]},
-						Player{},
+						nil,
 						100,
 						1,
 						1,
 						60,
+						5 * tileSize,
 					})
 				} else if code == 8 {
 					code = 0
@@ -97,12 +99,14 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 						tileSize * (float64(row) + 0.5),
 						200,
 						200,
+						0,
 						[]*ebiten.Image{g.images["blob1"]},
-						Player{},
+						nil,
 						200,
 						2,
 						2,
 						30,
+						5 * tileSize,
 					})
 				}
 

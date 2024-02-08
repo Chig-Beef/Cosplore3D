@@ -68,6 +68,10 @@ func (g *Game) Update() error {
 		g.curMousePos = [2]int{x, y}
 	}
 
+	for i := 0; i < len(g.levels[g.player.curLevel].enemies); i++ {
+		g.levels[g.player.curLevel].enemies[i].update(g)
+	}
+
 	g.player.update(g)
 
 	g.kull_enemies()
@@ -172,7 +176,7 @@ func main() {
 		tileSize * 3.5,
 		0,
 		&camera,
-		"ankaran",
+		"cosplorer",
 		7,
 		3,
 		100,

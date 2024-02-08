@@ -11,16 +11,52 @@ type Enemy struct {
 	y      float64
 	w      float64
 	h      float64
+	angle  float64
 	images []*ebiten.Image
-	target Player
+	target *Player
 	health float64
 	speed  float64
-	damgae float64
+	damage float64
 	roa    uint8
+	dov    float64
 }
 
-func (e *Enemy) update() {
+func (e *Enemy) update(g *Game) {
+	if e.target != nil {
+		e.follow_target()
+	} else {
+		// If player close enough
+		var dx, dy, dis float64
 
+		dx = e.x - g.player.x
+		dy = e.y - g.player.y
+		dis = math.Sqrt(math.Pow(dx, 2) + math.Pow(dy, 2))
+
+		if dis < e.dov {
+			e.target = g.player
+		}
+	}
+}
+
+func (e *Enemy) follow_target() {
+	var dx, dy, dis, angle float64
+
+	dx = e.x - e.target.x
+	dy = e.y - e.target.y
+	dis = math.Sqrt(math.Pow(dx, 2) + math.Pow(dy, 2))
+	angle = to_degrees(math.Acos(dx / dis))
+
+	if math.Asin(dy/dis) < 0 {
+		angle = -angle
+	}
+
+	// How much to the left or right of the player the enemy is
+	angle = bound_angle(angle)
+
+	e.x -= math.Cos(to_radians(angle)) * e.speed
+	e.y -= math.Sin(to_radians(angle)) * e.speed
+
+	e.angle = angle
 }
 
 func (e *Enemy) draw(screen *ebiten.Image, c *Camera) {
