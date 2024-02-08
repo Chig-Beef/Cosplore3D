@@ -233,7 +233,7 @@ func (c *Camera) draw_world(level Level, screen *ebiten.Image) {
 		op.GeoM.Translate(lineX, y)
 		//op.ColorM.ChangeHSV(0, 255, float64(fastInvSqrt(float32(disT)/float32(tileSize))))
 		//op.ColorM.ChangeHSV(0, 0, 1/math.Sqrt(disT/float64(tileSize)))
-		op.ColorM.ChangeHSV(0, 1, float64(fastInvSqrt(float32(int(disT)/tileSize+1))))
+		op.ColorM.ChangeHSV(0, 1, float64(fastInvSqrt(float32(disT/float64(tileSize)+1))))
 
 		screen.DrawImage(img, &op)
 

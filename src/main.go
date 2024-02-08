@@ -138,7 +138,7 @@ func main() {
 		0,
 		0,
 		90,
-		20 * tileSize,
+		30 * tileSize,
 	}
 
 	g.player = &Player{

@@ -5,11 +5,14 @@
 
 package main
 
-import "unsafe"
+import (
+	"unsafe"
+)
 
 func fastInvSqrt(x float32) float32 {
 	i := *(*int32)(unsafe.Pointer(&x))
 	i = 0x5f3759df - i>>1
 	y := *(*float32)(unsafe.Pointer(&i))
-	return y * (1.5 - 0.5*x*y*y)
+	//return y * (1.5 - 0.5*x*y*y)
+	return y
 }
