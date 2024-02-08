@@ -9,6 +9,8 @@ import (
 type Enemy struct {
 	x      float64
 	y      float64
+	w      float64
+	h      float64
 	images []*ebiten.Image
 	target Player
 	health uint32
@@ -49,8 +51,8 @@ func (e *Enemy) draw(screen *ebiten.Image, c *Camera) {
 	//ebitenutil.DrawLine(screen, lineX, 0, lineX, screenHeight, color.RGBA{255, 0, 0, 255})
 
 	ogW, ogH := e.images[0].Size()
-	sW := float64(ogW) / (dis / tileSize)
-	sH := float64(ogH) / (dis / tileSize)
+	sW := float64(ogW) / (dis / tileSize) * e.w / tileSize
+	sH := float64(ogH) / (dis / tileSize) * e.h / tileSize
 
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Scale(sW, sH)

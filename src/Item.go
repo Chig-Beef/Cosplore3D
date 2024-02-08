@@ -9,6 +9,8 @@ import (
 type Item struct {
 	x      float64
 	y      float64
+	w      float64
+	h      float64
 	images []*ebiten.Image
 }
 
@@ -40,11 +42,11 @@ func (i *Item) draw(screen *ebiten.Image, c *Camera) {
 	//ebitenutil.DrawLine(screen, lineX, 0, lineX, screenHeight, color.RGBA{255, 0, 0, 255})
 
 	ogW, ogH := i.images[0].Size()
-	sW := float64(ogW) / (dis / tileSize)
-	sH := float64(ogH) / (dis / tileSize)
+	sW := float64(ogW) / (dis / tileSize) * i.w / tileSize
+	sH := float64(ogH) / (dis / tileSize) * i.h / tileSize
 
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Scale(sW, sH)
-	op.GeoM.Translate(lineX-(sW*float64(ogW)/2.0), screenHeight/2+sH*float64(ogH))
+	op.GeoM.Translate(lineX-(sW*float64(ogW)/2.0), screenHeight/2-sH*float64(ogH)/2)
 	screen.DrawImage(i.images[0], op)
 }

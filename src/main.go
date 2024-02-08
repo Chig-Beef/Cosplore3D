@@ -19,7 +19,7 @@ const (
 
 type Game struct {
 	hasLoadedLevels bool
-	levels          map[string]Level
+	levels          map[string]*Level
 	player          *Player
 	images          map[string]*ebiten.Image
 	imageColumns    map[string]*[]*ebiten.Image
@@ -77,12 +77,7 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.levels[g.player.curLevel].draw_floor_sky(screen)
 	g.player.draw(g, screen)
-	for i := 0; i < len(g.levels[g.player.curLevel].enemies); i++ {
-		g.levels[g.player.curLevel].enemies[i].draw(screen, g.player.camera)
-	}
-	for i := 0; i < len(g.levels[g.player.curLevel].items); i++ {
-		g.levels[g.player.curLevel].items[i].draw(screen, g.player.camera)
-	}
+	g.levels[g.player.curLevel].draw_items_and_enemies(screen, g.player.camera)
 	g.player.draw_hud(g, screen)
 }
 

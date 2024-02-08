@@ -26,13 +26,13 @@ func (l Level) draw_floor_sky(screen *ebiten.Image) {
 	ebitenutil.DrawRect(screen, 0, screenHeight/2, screenWidth, screenHeight/2, l.floorColor)
 }
 
-func load_levels(g *Game, tileSize float64) map[string]Level {
+func load_levels(g *Game, tileSize float64) map[string]*Level {
 	create_image_columns(g, []string{
 		"cosplorerWall",
 		"ankaranWall",
 	})
 
-	levels := make(map[string]Level)
+	levels := make(map[string]*Level)
 
 	var levelData [][]string
 
@@ -81,6 +81,8 @@ func load_levels(g *Game, tileSize float64) map[string]Level {
 					enemies = append(enemies, Enemy{
 						tileSize * (float64(col) + 0.5),
 						tileSize * (float64(row) + 0.5),
+						200,
+						200,
 						[]*ebiten.Image{g.images["blob1"]},
 						Player{},
 						100,
@@ -93,12 +95,26 @@ func load_levels(g *Game, tileSize float64) map[string]Level {
 					enemies = append(enemies, Enemy{
 						tileSize * (float64(col) + 0.5),
 						tileSize * (float64(row) + 0.5),
+						200,
+						200,
 						[]*ebiten.Image{g.images["blob1"]},
 						Player{},
 						200,
 						2,
 						2,
 						30,
+					})
+				}
+
+				// Item
+				if code == 7 {
+					code = 0
+					items = append(items, Item{
+						tileSize * (float64(col) + 0.5),
+						tileSize * (float64(row) + 0.5),
+						50,
+						50,
+						[]*ebiten.Image{g.images["cosmium"]},
 					})
 				}
 
@@ -114,7 +130,7 @@ func load_levels(g *Game, tileSize float64) map[string]Level {
 			}
 		}
 
-		levels[lName] = Level{lName, tiles, enemies, items, floorColor, skyColor}
+		levels[lName] = &Level{lName, tiles, enemies, items, floorColor, skyColor}
 	}
 	g.hasLoadedLevels = true
 	return levels
@@ -187,4 +203,13 @@ func get_fs_color(data string) (color.RGBA, color.RGBA) {
 	skyColor := color.RGBA{colorArray[0], colorArray[1], colorArray[2], 255}
 
 	return floorColor, skyColor
+}
+
+func (l *Level) draw_items_and_enemies(screen *ebiten.Image, c *Camera) {
+	for i := 0; i < len(l.enemies); i++ {
+		l.enemies[i].draw(screen, c)
+	}
+	for i := 0; i < len(l.items); i++ {
+		l.items[i].draw(screen, c)
+	}
 }

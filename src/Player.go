@@ -48,7 +48,7 @@ func (p *Player) update(g *Game) {
 }
 
 func (p *Player) draw(g *Game, screen *ebiten.Image) {
-	p.camera.draw_world(g.levels[p.curLevel], screen)
+	p.camera.draw_world(*g.levels[p.curLevel], screen)
 
 	//p.camera.draw_2D(g.levels[p.curLevel], screen)
 }
