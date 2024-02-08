@@ -7,6 +7,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/text"
 )
 
@@ -46,6 +47,10 @@ func (p *Player) update(g *Game) {
 
 	p.camera.update_props(p)
 
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0) {
+		p.weapon.shoot(p, g.levels[p.curLevel].enemies)
+	}
+
 	p.check_collide(g.levels[p.curLevel])
 }
 
@@ -58,7 +63,7 @@ func (p *Player) check_collide(l *Level) {
 			aliveItems = append(aliveItems, i)
 		}
 	}
-	newItems := make([]Item, len(aliveItems))
+	newItems := make([]*Item, len(aliveItems))
 
 	for i := 0; i < len(aliveItems); i++ {
 		newItems[i] = l.items[aliveItems[i]]

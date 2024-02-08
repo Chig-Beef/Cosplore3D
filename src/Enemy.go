@@ -13,7 +13,7 @@ type Enemy struct {
 	h      float64
 	images []*ebiten.Image
 	target Player
-	health uint32
+	health float64
 	speed  float64
 	damgae float64
 	roa    uint8

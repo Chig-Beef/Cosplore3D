@@ -15,8 +15,8 @@ import (
 type Level struct {
 	name       string
 	data       [][]Tile
-	enemies    []Enemy
-	items      []Item
+	enemies    []*Enemy
+	items      []*Item
 	floorColor color.RGBA
 	skyColor   color.RGBA
 }
@@ -63,8 +63,8 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 		rawRows = rawRows[1:]
 
 		tiles := [][]Tile{}
-		enemies := []Enemy{}
-		items := []Item{}
+		enemies := []*Enemy{}
+		items := []*Item{}
 
 		for row := 0; row < len(rawRows); row++ {
 			tiles = append(tiles, []Tile{})
@@ -78,7 +78,7 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 				// Enemy
 				if code == 9 {
 					code = 0
-					enemies = append(enemies, Enemy{
+					enemies = append(enemies, &Enemy{
 						tileSize * (float64(col) + 0.5),
 						tileSize * (float64(row) + 0.5),
 						200,
@@ -92,7 +92,7 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 					})
 				} else if code == 8 {
 					code = 0
-					enemies = append(enemies, Enemy{
+					enemies = append(enemies, &Enemy{
 						tileSize * (float64(col) + 0.5),
 						tileSize * (float64(row) + 0.5),
 						200,
@@ -109,7 +109,7 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 				// Item
 				if code == 7 {
 					code = 0
-					items = append(items, Item{
+					items = append(items, &Item{
 						tileSize * (float64(col) + 0.5),
 						tileSize * (float64(row) + 0.5),
 						50,

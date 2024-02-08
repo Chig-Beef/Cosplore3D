@@ -1,11 +1,17 @@
 package main
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"math"
+
+	"github.com/hajimehoshi/ebiten/v2"
+)
 
 type Weapon struct {
-	damage float64
-	rof    uint8 // Rate Of Fire - How many frames between shots
-	mag    uint8 // Magazine - How many bullets the weapon can hold
+	damage     float64
+	rof        uint8   // Rate Of Fire - How many frames between shots
+	mag        uint8   // Magazine - How many bullets the weapon can hold
+	curMag     uint8   // How many bullets left
+	bulletSize float64 // How large of an area the weapon can hit
 }
 
 func (w *Weapon) draw(g *Game, screen *ebiten.Image) {
@@ -20,4 +26,33 @@ func (w *Weapon) draw(g *Game, screen *ebiten.Image) {
 	op.GeoM.Translate(screenWidth/2.0-(sW*float64(ogW))/2.0, screenHeight/8.0*7-sH*float64(ogH))
 
 	screen.DrawImage(img, &op)
+}
+
+func (w *Weapon) shoot(p *Player, enemies []*Enemy) {
+	var e *Enemy
+	var dx, dy, dis, angle float64
+
+	w.curMag--
+
+	for i := 0; i < len(enemies); i++ {
+		e = enemies[i]
+
+		dx = e.x - p.x
+		dy = e.y - p.y
+		dis = math.Sqrt(math.Pow(dx, 2) + math.Pow(dy, 2))
+		angle = to_degrees(math.Acos(dx / dis))
+
+		if math.Asin(dy/dis) < 0 {
+			angle = -angle
+		}
+
+		// How much to the left or right of the player the enemy is
+		angle -= p.angle
+		angle = bound_angle(angle)
+
+		if angle < w.bulletSize || angle > 360-w.bulletSize {
+			e.health -= w.damage
+			return
+		}
+	}
 }

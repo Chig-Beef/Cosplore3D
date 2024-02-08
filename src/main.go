@@ -70,8 +70,26 @@ func (g *Game) Update() error {
 
 	g.player.update(g)
 
+	g.kull_enemies()
+
 	g.prevMousePos = g.curMousePos
 	return nil
+}
+
+func (g *Game) kull_enemies() {
+	var e *Enemy
+	aliveEnemies := []int{}
+	for i := 0; i < len(g.levels[g.player.curLevel].enemies); i++ {
+		e = g.levels[g.player.curLevel].enemies[i]
+		if e.health > 0 {
+			aliveEnemies = append(aliveEnemies, i)
+		}
+	}
+	newEnemies := make([]*Enemy, len(aliveEnemies))
+	for i := 0; i < len(aliveEnemies); i++ {
+		newEnemies[i] = g.levels[g.player.curLevel].enemies[aliveEnemies[i]]
+	}
+	g.levels[g.player.curLevel].enemies = newEnemies
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
@@ -141,6 +159,14 @@ func main() {
 		30 * tileSize,
 	}
 
+	weapon := Weapon{
+		10,
+		60,
+		10,
+		10,
+		10,
+	}
+
 	g.player = &Player{
 		tileSize * 3.5,
 		tileSize * 3.5,
@@ -150,7 +176,7 @@ func main() {
 		7,
 		3,
 		100,
-		Weapon{},
+		weapon,
 	}
 
 	g.init_audio()
