@@ -14,6 +14,14 @@ type Item struct {
 	images []*ebiten.Image
 }
 
+func (i *Item) check_collide(p *Player) bool {
+	dx := i.x - p.x
+	dy := i.y - p.y
+	dis := math.Sqrt(math.Pow(dx, 2) + math.Pow(dy, 2))
+
+	return dis < float64(tileSize)/2
+}
+
 func (i *Item) draw(screen *ebiten.Image, c *Camera) {
 	dx := i.x - c.x
 	dy := i.y - c.y

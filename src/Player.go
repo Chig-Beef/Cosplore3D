@@ -45,6 +45,26 @@ func (p *Player) update(g *Game) {
 	p.angle = bound_angle(p.angle)
 
 	p.camera.update_props(p)
+
+	p.check_collide(g.levels[p.curLevel])
+}
+
+func (p *Player) check_collide(l *Level) {
+	aliveItems := []int{}
+	for i := 0; i < len(l.items); i++ {
+		if l.items[i].check_collide(p) {
+
+		} else {
+			aliveItems = append(aliveItems, i)
+		}
+	}
+	newItems := make([]Item, len(aliveItems))
+
+	for i := 0; i < len(aliveItems); i++ {
+		newItems[i] = l.items[aliveItems[i]]
+	}
+
+	l.items = newItems
 }
 
 func (p *Player) draw(g *Game, screen *ebiten.Image) {
