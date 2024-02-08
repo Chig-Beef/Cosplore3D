@@ -8,14 +8,15 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/hajimehoshi/ebiten"
-	"github.com/hajimehoshi/ebiten/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 type Level struct {
 	name       string
 	data       [][]Tile
 	enemies    []Enemy
+	items      []Item
 	floorColor color.RGBA
 	skyColor   color.RGBA
 }
@@ -63,6 +64,8 @@ func load_levels(g *Game, tileSize float64) map[string]Level {
 
 		tiles := [][]Tile{}
 		enemies := []Enemy{}
+		items := []Item{}
+
 		for row := 0; row < len(rawRows); row++ {
 			tiles = append(tiles, []Tile{})
 			rawRow := strings.Split(rawRows[row], ",")
@@ -111,7 +114,7 @@ func load_levels(g *Game, tileSize float64) map[string]Level {
 			}
 		}
 
-		levels[lName] = Level{lName, tiles, enemies, floorColor, skyColor}
+		levels[lName] = Level{lName, tiles, enemies, items, floorColor, skyColor}
 	}
 	g.hasLoadedLevels = true
 	return levels

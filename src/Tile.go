@@ -4,7 +4,7 @@ import (
 	"image/color"
 	"math"
 
-	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Tile struct {
@@ -62,7 +62,7 @@ func create_image_columns(g *Game, keys []string) {
 		images := make([]*ebiten.Image, imgW) // Since we know the size we can initialise with size
 		var newImage *ebiten.Image
 		for i := 0; i < imgW; i++ {
-			newImage, _ = ebiten.NewImage(1, imgH, ebiten.FilterDefault)
+			newImage = ebiten.NewImage(1, imgH)
 			for j := 0; j < imgH; j++ {
 				clr := img.At(i, j)
 				newImage.Set(0, j, clr)

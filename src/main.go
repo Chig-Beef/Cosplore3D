@@ -3,10 +3,10 @@ package main
 import (
 	"log"
 
-	"github.com/hajimehoshi/ebiten"
-	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"github.com/hajimehoshi/ebiten/examples/resources/fonts"
-	"github.com/hajimehoshi/ebiten/inpututil"
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/opentype"
 )
@@ -21,7 +21,6 @@ type Game struct {
 	hasLoadedLevels bool
 	levels          map[string]Level
 	player          *Player
-	enemies         []Enemy
 	images          map[string]*ebiten.Image
 	imageColumns    map[string]*[]*ebiten.Image
 	fonts           map[string]font.Face
@@ -34,7 +33,7 @@ type Game struct {
 	errCh         chan error
 }
 
-func (g *Game) Update(screen *ebiten.Image) error {
+func (g *Game) Update() error {
 	if !g.hasLoadedLevels {
 		g.levels = load_levels(g, tileSize)
 	}
@@ -79,7 +78,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.levels[g.player.curLevel].draw_floor_sky(screen)
 	g.player.draw(g, screen)
 	for i := 0; i < len(g.levels[g.player.curLevel].enemies); i++ {
-		g.levels[g.player.curLevel].enemies[i].draw(screen, *g.player.camera)
+		g.levels[g.player.curLevel].enemies[i].draw(screen, g.player.camera)
+	}
+	for i := 0; i < len(g.levels[g.player.curLevel].items); i++ {
+		g.levels[g.player.curLevel].items[i].draw(screen, g.player.camera)
 	}
 	g.player.draw_hud(g, screen)
 }
@@ -116,10 +118,11 @@ func (g *Game) load_images() {
 	load_image(g, "gun", "gun")
 	load_image(g, "cosplorerWall", "cosplorerWall")
 	load_image(g, "ankaranWall", "ankaranWall")
+	load_image(g, "cosmium", "cosmium")
 }
 
 func load_image(g *Game, fName string, mName string) {
-	img, _, err := ebitenutil.NewImageFromFile("assets/images/"+fName+".png", ebiten.FilterDefault)
+	img, _, err := ebitenutil.NewImageFromFile("assets/images/" + fName + ".png")
 	if err != nil {
 		log.Fatal(err)
 	}

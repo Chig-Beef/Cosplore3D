@@ -4,8 +4,8 @@ import (
 	"image/color"
 	"math"
 
-	"github.com/hajimehoshi/ebiten"
-	"github.com/hajimehoshi/ebiten/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 type Camera struct {
@@ -17,7 +17,7 @@ type Camera struct {
 }
 
 func (c *Camera) draw_2D(level Level, screen *ebiten.Image) {
-	output2D, _ := ebiten.NewImage(200, 200, ebiten.FilterDefault)
+	output2D := ebiten.NewImage(200, 200)
 	output2D.Fill(color.RGBA{32, 32, 32, 255})
 
 	var clr color.Color

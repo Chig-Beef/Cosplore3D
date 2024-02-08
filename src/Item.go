@@ -6,24 +6,15 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-type Enemy struct {
+type Item struct {
 	x      float64
 	y      float64
 	images []*ebiten.Image
-	target Player
-	health uint32
-	speed  float64
-	damgae float64
-	roa    uint8
 }
 
-func (e *Enemy) update() {
-
-}
-
-func (e *Enemy) draw(screen *ebiten.Image, c *Camera) {
-	dx := e.x - c.x
-	dy := e.y - c.y
+func (i *Item) draw(screen *ebiten.Image, c *Camera) {
+	dx := i.x - c.x
+	dy := i.y - c.y
 	dis := math.Sqrt(math.Pow(dx, 2) + math.Pow(dy, 2))
 	angle := to_degrees(math.Acos(dx / dis))
 
@@ -48,12 +39,12 @@ func (e *Enemy) draw(screen *ebiten.Image, c *Camera) {
 
 	//ebitenutil.DrawLine(screen, lineX, 0, lineX, screenHeight, color.RGBA{255, 0, 0, 255})
 
-	ogW, ogH := e.images[0].Size()
+	ogW, ogH := i.images[0].Size()
 	sW := float64(ogW) / (dis / tileSize)
 	sH := float64(ogH) / (dis / tileSize)
 
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Scale(sW, sH)
 	op.GeoM.Translate(lineX-(sW*float64(ogW)/2.0), screenHeight/2+sH*float64(ogH))
-	screen.DrawImage(e.images[0], op)
+	screen.DrawImage(i.images[0], op)
 }
