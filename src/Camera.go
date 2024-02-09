@@ -190,7 +190,7 @@ func (c *Camera) draw_world(level Level, screen *ebiten.Image) {
 
 		disT *= math.Cos(to_radians(a))
 
-		if disT > c.dov || disT < 0.5 {
+		if disT > c.dov {
 			ra += ri
 			ra = bound_angle(ra)
 			continue

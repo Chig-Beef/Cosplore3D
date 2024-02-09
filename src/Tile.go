@@ -18,7 +18,6 @@ type Tile struct {
 }
 
 func (t *Tile) check_hit(x, y int) bool {
-
 	if x == int(t.x) || x == int(t.x+t.w) {
 		if y >= int(t.y) && y <= int(t.y+t.h) {
 			return true
@@ -31,6 +30,10 @@ func (t *Tile) check_hit(x, y int) bool {
 	}
 
 	return false
+}
+
+func (t *Tile) check_line_intersect(x, y float64) bool {
+	return x >= t.x && x <= t.x+t.w && y >= t.y && y <= t.y+t.h
 }
 
 func get_color_with_distance(c color.Color, d float64) color.Color {

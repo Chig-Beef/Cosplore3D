@@ -26,21 +26,47 @@ type Player struct {
 func (p *Player) update(g *Game) {
 	p.angle += float64(g.curMousePos[0]-g.prevMousePos[0]) * p.haste / 10.0
 
+	nx := p.x
+	ny := p.y
+	rx := p.x
+	ry := p.y
+
 	if ebiten.IsKeyPressed(ebiten.KeyW) {
-		p.x += math.Cos(to_radians(p.angle)) * p.speed
-		p.y += math.Sin(to_radians(p.angle)) * p.speed
+		nx += math.Cos(to_radians(p.angle)) * p.speed
+		ny += math.Sin(to_radians(p.angle)) * p.speed
+		rx += math.Cos(to_radians(p.angle)) * p.speed * 2
+		ry += math.Sin(to_radians(p.angle)) * p.speed * 2
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyS) {
-		p.x -= math.Cos(to_radians(p.angle)) * p.speed
-		p.y -= math.Sin(to_radians(p.angle)) * p.speed
+		nx -= math.Cos(to_radians(p.angle)) * p.speed
+		ny -= math.Sin(to_radians(p.angle)) * p.speed
+		rx -= math.Cos(to_radians(p.angle)) * p.speed * 2
+		ry -= math.Sin(to_radians(p.angle)) * p.speed * 2
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyA) {
-		p.x += math.Cos(to_radians(p.angle-90)) * p.speed
-		p.y += math.Sin(to_radians(p.angle-90)) * p.speed
+		nx += math.Cos(to_radians(p.angle-90)) * p.speed
+		ny += math.Sin(to_radians(p.angle-90)) * p.speed
+		rx += math.Cos(to_radians(p.angle-90)) * p.speed * 2
+		ry += math.Sin(to_radians(p.angle-90)) * p.speed * 2
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyD) {
-		p.x -= math.Cos(to_radians(p.angle-90)) * p.speed
-		p.y -= math.Sin(to_radians(p.angle-90)) * p.speed
+		nx -= math.Cos(to_radians(p.angle-90)) * p.speed
+		ny -= math.Sin(to_radians(p.angle-90)) * p.speed
+		rx -= math.Cos(to_radians(p.angle-90)) * p.speed * 2
+		ry -= math.Sin(to_radians(p.angle-90)) * p.speed * 2
+	}
+
+	hit := false
+	tiles := g.levels[p.curLevel].get_solid_tiles()
+	for i := 0; i < len(tiles); i++ {
+		if tiles[i].check_line_intersect(rx, ry) {
+			hit = true
+			break
+		}
+	}
+	if !hit {
+		p.x = nx
+		p.y = ny
 	}
 
 	p.angle = bound_angle(p.angle)

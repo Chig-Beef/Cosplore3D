@@ -34,6 +34,8 @@ type Game struct {
 }
 
 func (g *Game) Update() error {
+	//fmt.Println(ebiten.ActualTPS())
+
 	if !g.hasLoadedLevels {
 		g.levels = load_levels(g, tileSize)
 	}
@@ -178,7 +180,7 @@ func main() {
 		0,
 		&camera,
 		"ankaran",
-		7,
+		10,
 		3,
 		100,
 		weapon,
