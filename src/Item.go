@@ -12,6 +12,7 @@ type Item struct {
 	w      float64
 	h      float64
 	images []*ebiten.Image
+	action Action
 }
 
 func (i *Item) check_collide(p *Player) bool {

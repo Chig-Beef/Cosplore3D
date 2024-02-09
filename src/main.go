@@ -136,6 +136,7 @@ func (g *Game) load_images() {
 	load_image(g, "cosplorerWall", "cosplorerWall")
 	load_image(g, "ankaranWall", "ankaranWall")
 	load_image(g, "cosmium", "cosmium")
+	load_image(g, "ammo", "ammo")
 }
 
 func load_image(g *Game, fName string, mName string) {
@@ -176,7 +177,7 @@ func main() {
 		tileSize * 3.5,
 		0,
 		&camera,
-		"cosplorer",
+		"ankaran",
 		7,
 		3,
 		100,

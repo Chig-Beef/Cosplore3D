@@ -51,14 +51,16 @@ func (p *Player) update(g *Game) {
 		p.weapon.shoot(p, g.levels[p.curLevel].enemies)
 	}
 
-	p.check_collide(g.levels[p.curLevel])
+	p.check_collide(g, g.levels[p.curLevel])
 }
 
-func (p *Player) check_collide(l *Level) {
+func (p *Player) check_collide(g *Game, l *Level) {
 	aliveItems := []int{}
 	for i := 0; i < len(l.items); i++ {
 		if l.items[i].check_collide(p) {
-
+			if l.items[i].action != nil {
+				l.items[i].action(g)
+			}
 		} else {
 			aliveItems = append(aliveItems, i)
 		}
