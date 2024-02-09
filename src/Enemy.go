@@ -2,28 +2,32 @@ package main
 
 import (
 	"math"
+	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Enemy struct {
-	x      float64
-	y      float64
-	w      float64
-	h      float64
-	angle  float64
-	images []*ebiten.Image
-	target *Player
-	health float64
-	speed  float64
-	damage float64
-	roa    uint8
-	dov    float64
+	x              float64
+	y              float64
+	w              float64
+	h              float64
+	angle          float64
+	images         []*ebiten.Image
+	target         *Player
+	health         float64
+	speed          float64
+	damage         float64
+	roa            uint8
+	dov            float64
+	attackRange    float64
+	attackCooldown uint8
 }
 
 func (e *Enemy) update(g *Game) {
 	if e.target != nil {
 		e.follow_target()
+		e.attack_target()
 	} else {
 		// If player close enough
 		var dx, dy, dis float64
@@ -34,6 +38,28 @@ func (e *Enemy) update(g *Game) {
 
 		if dis < e.dov {
 			e.target = g.player
+		}
+	}
+}
+
+func (e *Enemy) attack_target() {
+	var dx, dy, dis float64
+
+	dx = e.x - e.target.x
+	dy = e.y - e.target.y
+	dis = math.Sqrt(math.Pow(dx, 2) + math.Pow(dy, 2))
+
+	if dis < e.attackRange {
+		e.attackCooldown--
+		if e.attackCooldown == 0 {
+			e.target.health -= e.damage
+
+			// Attempt to kill
+			if e.target.health <= 0 {
+				os.Exit(0)
+			}
+
+			e.attackCooldown = e.roa
 		}
 	}
 }

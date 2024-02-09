@@ -91,6 +91,8 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 						1,
 						60,
 						5 * tileSize,
+						10,
+						60,
 					})
 				} else if code == 8 {
 					code = 0
@@ -107,6 +109,8 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 						2,
 						30,
 						5 * tileSize,
+						10,
+						30,
 					})
 				}
 
@@ -119,6 +123,17 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 						50,
 						50,
 						[]*ebiten.Image{g.images["cosmium"]},
+						nil,
+					})
+				} else if code == 6 {
+					code = 0
+					items = append(items, &Item{
+						tileSize * (float64(col) + 0.5),
+						tileSize * (float64(row) + 0.5),
+						50,
+						50,
+						[]*ebiten.Image{g.images["ammo"]},
+						giveAmmo,
 					})
 				}
 
@@ -148,10 +163,6 @@ func get_tile_image(code uint8) string {
 		return "cosplorerWall"
 	case 2:
 		return "ankaranWall"
-	case 3:
-		return "cosplorerWall"
-	case 4:
-		return "cosplorerWall"
 	default:
 		return "ankaranWall"
 	}
