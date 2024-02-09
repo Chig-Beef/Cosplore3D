@@ -24,9 +24,9 @@ type Enemy struct {
 	attackCooldown uint8
 }
 
-func (e *Enemy) update(g *Game) {
+func (e *Enemy) update(g *Game, tiles []Tile) {
 	if e.target != nil {
-		e.follow_target()
+		e.follow_target(tiles)
 		e.attack_target()
 	} else {
 		// If player close enough
@@ -64,7 +64,7 @@ func (e *Enemy) attack_target() {
 	}
 }
 
-func (e *Enemy) follow_target() {
+func (e *Enemy) follow_target(tiles []Tile) {
 	var dx, dy, dis, angle float64
 
 	dx = e.x - e.target.x
@@ -79,8 +79,26 @@ func (e *Enemy) follow_target() {
 	// How much to the left or right of the player the enemy is
 	angle = bound_angle(angle)
 
-	e.x -= math.Cos(to_radians(angle)) * e.speed
-	e.y -= math.Sin(to_radians(angle)) * e.speed
+	nx := e.x
+	ny := e.y
+	rx := e.x
+	ry := e.y
+
+	nx -= math.Cos(to_radians(angle)) * e.speed
+	ny -= math.Sin(to_radians(angle)) * e.speed
+	rx -= math.Cos(to_radians(angle)) * e.speed * 2
+	ry -= math.Sin(to_radians(angle)) * e.speed * 2
+	hit := false
+	for i := 0; i < len(tiles); i++ {
+		if tiles[i].check_line_intersect(rx, ry) {
+			hit = true
+			break
+		}
+	}
+	if !hit {
+		e.x = nx
+		e.y = ny
+	}
 
 	e.angle = angle
 }
@@ -95,6 +113,8 @@ func (e *Enemy) draw(screen *ebiten.Image, c *Camera) {
 	if math.Asin(dy/dis) < 0 {
 		angle = -angle
 	}
+
+	vangle := angle - e.angle
 
 	angle -= c.angle
 
@@ -112,12 +132,24 @@ func (e *Enemy) draw(screen *ebiten.Image, c *Camera) {
 
 	//ebitenutil.DrawLine(screen, lineX, 0, lineX, screenHeight, color.RGBA{255, 0, 0, 255})
 
-	ogW, ogH := e.images[0].Size()
+	vangle = bound_angle(vangle)
+	var img *ebiten.Image
+	if vangle <= 45 || vangle >= 315 {
+		img = e.images[0]
+	} else if vangle > 45 && vangle <= 135 {
+		img = e.images[1]
+	} else if vangle > 135 && vangle <= 225 {
+		img = e.images[2]
+	} else {
+		img = e.images[3]
+	}
+
+	ogW, ogH := img.Size()
 	sW := float64(ogW) / (dis / tileSize) * e.w / tileSize
 	sH := float64(ogH) / (dis / tileSize) * e.h / tileSize
 
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Scale(sW, sH)
 	op.GeoM.Translate(lineX-(sW*float64(ogW)/2.0), screenHeight/2+sH*float64(ogH))
-	screen.DrawImage(e.images[0], op)
+	screen.DrawImage(img, op)
 }

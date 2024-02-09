@@ -71,7 +71,7 @@ func (g *Game) Update() error {
 	}
 
 	for i := 0; i < len(g.levels[g.player.curLevel].enemies); i++ {
-		g.levels[g.player.curLevel].enemies[i].update(g)
+		g.levels[g.player.curLevel].enemies[i].update(g, g.levels[g.player.curLevel].get_solid_tiles())
 	}
 
 	g.player.update(g)
@@ -132,7 +132,11 @@ func (g *Game) load_fonts() {
 func (g *Game) load_images() {
 	g.images = make(map[string]*ebiten.Image)
 
-	load_image(g, "blob1", "blob1")
+	load_image(g, "blob1", "blobFront")
+	load_image(g, "blob2", "blobRight")
+	load_image(g, "blob3", "blobBack")
+	load_image(g, "blob4", "blobLeft")
+
 	load_image(g, "heart", "heart")
 	load_image(g, "gun", "gun")
 	load_image(g, "cosplorerWall", "cosplorerWall")
