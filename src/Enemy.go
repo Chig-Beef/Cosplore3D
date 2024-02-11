@@ -153,3 +153,19 @@ func (e *Enemy) draw(screen *ebiten.Image, c *Camera) {
 	op.GeoM.Translate(lineX-(sW*float64(ogW)/2.0), screenHeight/2+sH*float64(ogH))
 	screen.DrawImage(img, op)
 }
+
+func (g *Game) kull_enemies() {
+	var e *Enemy
+	aliveEnemies := []int{}
+	for i := 0; i < len(g.levels[g.player.curLevel].enemies); i++ {
+		e = g.levels[g.player.curLevel].enemies[i]
+		if e.health > 0 {
+			aliveEnemies = append(aliveEnemies, i)
+		}
+	}
+	newEnemies := make([]*Enemy, len(aliveEnemies))
+	for i := 0; i < len(aliveEnemies); i++ {
+		newEnemies[i] = g.levels[g.player.curLevel].enemies[aliveEnemies[i]]
+	}
+	g.levels[g.player.curLevel].enemies = newEnemies
+}

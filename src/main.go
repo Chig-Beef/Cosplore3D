@@ -4,7 +4,6 @@ import (
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"golang.org/x/image/font"
@@ -82,22 +81,6 @@ func (g *Game) Update() error {
 	return nil
 }
 
-func (g *Game) kull_enemies() {
-	var e *Enemy
-	aliveEnemies := []int{}
-	for i := 0; i < len(g.levels[g.player.curLevel].enemies); i++ {
-		e = g.levels[g.player.curLevel].enemies[i]
-		if e.health > 0 {
-			aliveEnemies = append(aliveEnemies, i)
-		}
-	}
-	newEnemies := make([]*Enemy, len(aliveEnemies))
-	for i := 0; i < len(aliveEnemies); i++ {
-		newEnemies[i] = g.levels[g.player.curLevel].enemies[aliveEnemies[i]]
-	}
-	g.levels[g.player.curLevel].enemies = newEnemies
-}
-
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.levels[g.player.curLevel].draw_floor_sky(screen)
 	g.player.draw(g, screen)
@@ -127,30 +110,6 @@ func (g *Game) load_fonts() {
 		log.Fatal(err)
 	}
 	g.fonts["ammo"] = mplusNormalFont
-}
-
-func (g *Game) load_images() {
-	g.images = make(map[string]*ebiten.Image)
-
-	load_image(g, "blob1", "blobFront")
-	load_image(g, "blob2", "blobRight")
-	load_image(g, "blob3", "blobBack")
-	load_image(g, "blob4", "blobLeft")
-
-	load_image(g, "heart", "heart")
-	load_image(g, "gun", "gun")
-	load_image(g, "cosplorerWall", "cosplorerWall")
-	load_image(g, "ankaranWall", "ankaranWall")
-	load_image(g, "cosmium", "cosmium")
-	load_image(g, "ammo", "ammo")
-}
-
-func load_image(g *Game, fName string, mName string) {
-	img, _, err := ebitenutil.NewImageFromFile("assets/images/" + fName + ".png")
-	if err != nil {
-		log.Fatal(err)
-	}
-	g.images[mName] = img
 }
 
 func main() {
