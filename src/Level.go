@@ -36,21 +36,21 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 
 	var levelData [][]string
 
-	rawLevelData, err := os.ReadFile("maps/levels.json")
+	rawLevelData, err := os.ReadFile("assets/maps/levels.json")
 	if err != nil {
 		return levels
 	}
 
 	err = json.Unmarshal(rawLevelData, &levelData)
 	if err != nil {
-		log.Fatal("failed to load `./maps/levels.json`, file may have been tampered with, reinstall advised")
+		log.Fatal("failed to load `./assets/maps/levels.json`, file may have been tampered with, reinstall advised")
 	}
 
 	// Get every level held in ./maps/
 	for i := 0; i < len(levelData); i++ {
 		fName := levelData[i][0]
 		lName := levelData[i][1]
-		rawLevel, err := os.ReadFile("maps/" + fName)
+		rawLevel, err := os.ReadFile("assets/maps/" + fName)
 		if err != nil {
 			return levels
 		}
