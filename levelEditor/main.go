@@ -3,9 +3,11 @@ package main
 import (
 	"image/color"
 	"log"
+	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"golang.org/x/image/font"
 )
 
@@ -20,6 +22,8 @@ type Game struct {
 	fonts        map[string]font.Face
 	curMousePos  [2]int
 	prevMousePos [2]int
+
+	curCodeSelection uint8
 
 	level Level
 }
@@ -39,6 +43,30 @@ func (g *Game) Update() error {
 		g.curMousePos = [2]int{1, 1}
 	} else {
 		g.curMousePos = [2]int{x, y}
+	}
+
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0) {
+		col := int(math.Floor(float64(g.curMousePos[0]) / tileSize))
+		row := int(math.Floor(float64(g.curMousePos[1]-160) / tileSize))
+
+		if row < len(g.level.data) && row >= 0 {
+			if col < len(g.level.data[row]) && col >= 0 {
+				g.level.data[row][col] = g.curCodeSelection
+			}
+		}
+	}
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButton1) {
+		g.curCodeSelection++
+	}
+	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButton2) {
+		col := int(math.Floor(float64(g.curMousePos[0]) / tileSize))
+		row := int(math.Floor(float64(g.curMousePos[1]-160) / tileSize))
+
+		if row < len(g.level.data) && row >= 0 {
+			if col < len(g.level.data[row]) && col >= 0 {
+				g.level.data[row][col] = 0
+			}
+		}
 	}
 
 	g.prevMousePos = g.curMousePos
@@ -64,7 +92,7 @@ func draw_relevant_image(screen *ebiten.Image, g *Game, code uint8, row, col int
 
 		op := ebiten.DrawImageOptions{}
 		op.GeoM.Scale(tileSize/float64(img.Bounds().Dx()), tileSize/float64(img.Bounds().Dy()))
-		op.GeoM.Translate(float64(row)*tileSize, float64(col)*tileSize)
+		op.GeoM.Translate(float64(col)*tileSize, float64(row)*tileSize+160)
 
 		screen.DrawImage(img, &op)
 	case 2:
@@ -72,7 +100,7 @@ func draw_relevant_image(screen *ebiten.Image, g *Game, code uint8, row, col int
 
 		op := ebiten.DrawImageOptions{}
 		op.GeoM.Scale(tileSize/float64(img.Bounds().Dx()), tileSize/float64(img.Bounds().Dy()))
-		op.GeoM.Translate(float64(row)*tileSize, float64(col)*tileSize)
+		op.GeoM.Translate(float64(col)*tileSize, float64(row)*tileSize+160)
 
 		screen.DrawImage(img, &op)
 	case 7:
@@ -80,15 +108,15 @@ func draw_relevant_image(screen *ebiten.Image, g *Game, code uint8, row, col int
 
 		op := ebiten.DrawImageOptions{}
 		op.GeoM.Scale(tileSize/float64(img.Bounds().Dx()), tileSize/float64(img.Bounds().Dy()))
-		op.GeoM.Translate(float64(row)*tileSize, float64(col)*tileSize)
+		op.GeoM.Translate(float64(col)*tileSize, float64(row)*tileSize+160)
 
 		screen.DrawImage(img, &op)
 	case 8:
-		img := g.images["bloblFront"]
+		img := g.images["blobFront"]
 
 		op := ebiten.DrawImageOptions{}
 		op.GeoM.Scale(tileSize/float64(img.Bounds().Dx()), tileSize/float64(img.Bounds().Dy()))
-		op.GeoM.Translate(float64(row)*tileSize, float64(col)*tileSize)
+		op.GeoM.Translate(float64(col)*tileSize, float64(row)*tileSize+160)
 
 		screen.DrawImage(img, &op)
 	case 9:
@@ -96,7 +124,7 @@ func draw_relevant_image(screen *ebiten.Image, g *Game, code uint8, row, col int
 
 		op := ebiten.DrawImageOptions{}
 		op.GeoM.Scale(tileSize/float64(img.Bounds().Dx()), tileSize/float64(img.Bounds().Dy()))
-		op.GeoM.Translate(float64(row)*tileSize, float64(col)*tileSize)
+		op.GeoM.Translate(float64(col)*tileSize, float64(row)*tileSize+160)
 
 		screen.DrawImage(img, &op)
 	default:
@@ -139,6 +167,8 @@ func main() {
 
 	g := &Game{}
 
+	g.curCodeSelection = 1
+
 	g.load_images()
 
 	g.level = Level{
@@ -149,7 +179,7 @@ func main() {
 	}
 
 	ebiten.SetWindowSize(screenWidth, screenHeight)
-	ebiten.SetWindowTitle("Cosplore3D")
+	ebiten.SetWindowTitle("CosEditor")
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
 	}
