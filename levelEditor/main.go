@@ -6,6 +6,7 @@ import (
 	"math"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -169,7 +170,6 @@ func blank_level(width, height int) [][]uint8 {
 	for row := 0; row < height; row++ {
 		output[row] = make([]uint8, width)
 	}
-	output[5][5] = 1
 	return output
 }
 
@@ -198,6 +198,99 @@ func save(d [][]uint8) {
 	}
 }
 
+func load() Level {
+	name := "unknown"
+	floorColor := color.RGBA{128, 128, 128, 255}
+	skyColor := color.RGBA{0, 0, 0, 255}
+
+	rawData, err := os.ReadFile("temp.txt")
+	if err != nil {
+		log.Println("Could not find or read temp.txt")
+		return Level{name, blank_level(32, 32), floorColor, skyColor}
+	}
+
+	splitData := strings.Split(string(rawData), "\n")
+
+	colors := strings.Split(splitData[0], "|")
+
+	rawFloorColor := strings.Split(colors[0], ",")
+	//fmt.Println(rawData)
+
+	if len(rawFloorColor) != 3 {
+		log.Println("Need 3 color arguments in floor color")
+		return Level{name, blank_level(32, 32), floorColor, skyColor}
+	}
+
+	r, err := strconv.Atoi(rawFloorColor[0])
+	if err != nil {
+		log.Println("Need integers for colors")
+		return Level{name, blank_level(32, 32), floorColor, skyColor}
+	}
+
+	g, err := strconv.Atoi(rawFloorColor[1])
+	if err != nil {
+		log.Println("Need integers for colors")
+		return Level{name, blank_level(32, 32), floorColor, skyColor}
+	}
+
+	b, err := strconv.Atoi(rawFloorColor[2])
+	if err != nil {
+		log.Println("Need integers for colors")
+		return Level{name, blank_level(32, 32), floorColor, skyColor}
+	}
+
+	floorColor.R = uint8(r)
+	floorColor.G = uint8(g)
+	floorColor.B = uint8(b)
+
+	rawSkyColor := strings.Split(colors[1], ",")
+
+	if len(rawSkyColor) != 3 {
+		log.Println("Need 3 color arguments in sky color")
+		return Level{name, blank_level(32, 32), floorColor, skyColor}
+	}
+
+	r, err = strconv.Atoi(rawSkyColor[0])
+	if err != nil {
+		log.Println("Need integers for colors")
+		return Level{name, blank_level(32, 32), floorColor, skyColor}
+	}
+
+	g, err = strconv.Atoi(rawSkyColor[1])
+	if err != nil {
+		log.Println("Need integers for colors")
+		return Level{name, blank_level(32, 32), floorColor, skyColor}
+	}
+
+	b, err = strconv.Atoi(rawSkyColor[2])
+	if err != nil {
+		log.Println("Need integers for colors")
+		return Level{name, blank_level(32, 32), floorColor, skyColor}
+	}
+
+	skyColor.R = uint8(r)
+	skyColor.G = uint8(g)
+	skyColor.B = uint8(b)
+
+	data := [][]uint8{}
+
+	rows := splitData[1:]
+	for y := 0; y < len(rows); y++ {
+		data = append(data, []uint8{})
+		row := strings.Split(rows[y], ",")
+		for x := 0; x < len(row); x++ {
+			n, err := strconv.Atoi(row[x])
+			if err != nil {
+				log.Println("Need integers for data")
+				return Level{name, blank_level(32, 32), floorColor, skyColor}
+			}
+			data[y] = append(data[y], uint8(n))
+		}
+	}
+
+	return Level{name, data, floorColor, skyColor}
+}
+
 func main() {
 
 	g := &Game{}
@@ -206,12 +299,7 @@ func main() {
 
 	g.load_images()
 
-	g.level = Level{
-		"unknown",
-		blank_level(32, 32),
-		color.RGBA{},
-		color.RGBA{},
-	}
+	g.level = load()
 
 	ebiten.SetWindowSize(screenWidth, screenHeight)
 	ebiten.SetWindowTitle("CosEditor")
