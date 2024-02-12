@@ -4,6 +4,8 @@ import (
 	"image/color"
 	"log"
 	"math"
+	"os"
+	"strconv"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -54,6 +56,12 @@ func (g *Game) Update() error {
 				g.level.data[row][col] = g.curCodeSelection
 			}
 		}
+
+		if 10 <= g.curMousePos[0] && g.curMousePos[0] <= 60 {
+			if 10 <= g.curMousePos[1] && g.curMousePos[1] <= 60 {
+				save(g.level.data)
+			}
+		}
 	}
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButton1) {
 		g.curCodeSelection++
@@ -75,6 +83,8 @@ func (g *Game) Update() error {
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.Fill(color.Black)
+
+	ebitenutil.DrawRect(screen, 10, 10, 50, 50, color.White)
 
 	for row := 0; row < len(g.level.data); row++ {
 		for col := 0; col < len(g.level.data[row]); col++ {
@@ -161,6 +171,31 @@ func blank_level(width, height int) [][]uint8 {
 	}
 	output[5][5] = 1
 	return output
+}
+
+func save(d [][]uint8) {
+	output := "128,128,128|0,0,0\n"
+
+	for row := 0; row < len(d); row++ {
+		for col := 0; col < len(d[row]); col++ {
+			output += strconv.Itoa(int(d[row][col]))
+			output += ","
+		}
+		// Get rid of extra comma
+		output = output[:len(output)-1] + "\n"
+	}
+	// Get rid of extra newline
+	output = output[:len(output)-1]
+
+	file, err := os.Create("temp.txt")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = file.Write([]byte(output))
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func main() {
