@@ -231,10 +231,11 @@ func get_fs_color(data string) (color.RGBA, color.RGBA) {
 }
 
 func (l *Level) draw_items_and_enemies(screen *ebiten.Image, c *Camera) {
+	tiles := l.get_solid_tiles()
 	for i := 0; i < len(l.enemies); i++ {
-		l.enemies[i].draw(screen, c)
+		l.enemies[i].draw(screen, c, tiles)
 	}
 	for i := 0; i < len(l.items); i++ {
-		l.items[i].draw(screen, c)
+		l.items[i].draw(screen, c, tiles)
 	}
 }

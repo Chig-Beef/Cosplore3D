@@ -59,7 +59,7 @@ func (p *Player) update(g *Game) {
 	hit := false
 	tiles := g.levels[p.curLevel].get_solid_tiles()
 	for i := 0; i < len(tiles); i++ {
-		if tiles[i].check_line_intersect(rx, ry) {
+		if tiles[i].check_point_in_tile(rx, ry) {
 			hit = true
 			break
 		}
@@ -74,7 +74,7 @@ func (p *Player) update(g *Game) {
 	p.camera.update_props(p)
 
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0) && p.weapon.curMag > 0 {
-		p.weapon.shoot(p, g.levels[p.curLevel].enemies)
+		p.weapon.shoot(p, g.levels[p.curLevel].enemies, g.levels[p.curLevel].get_solid_tiles())
 	}
 
 	p.check_collide(g, g.levels[p.curLevel])

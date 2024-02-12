@@ -23,7 +23,14 @@ func (i *Item) check_collide(p *Player) bool {
 	return dis < float64(tileSize)/2
 }
 
-func (i *Item) draw(screen *ebiten.Image, c *Camera) {
+func (i *Item) draw(screen *ebiten.Image, c *Camera, tiles []Tile) {
+	for n := 0; n < len(tiles); n++ {
+		if tiles[n].check_line_in_tile(i.x, i.y, c.x, c.y) {
+			// Can't see through a wall
+			return
+		}
+	}
+
 	dx := i.x - c.x
 	dy := i.y - c.y
 	dis := math.Sqrt(math.Pow(dx, 2) + math.Pow(dy, 2))

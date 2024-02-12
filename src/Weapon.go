@@ -28,7 +28,7 @@ func (w *Weapon) draw(g *Game, screen *ebiten.Image) {
 	screen.DrawImage(img, &op)
 }
 
-func (w *Weapon) shoot(p *Player, enemies []*Enemy) {
+func (w *Weapon) shoot(p *Player, enemies []*Enemy, tiles []Tile) {
 	var e *Enemy
 	var dx, dy, dis, angle float64
 
@@ -36,6 +36,18 @@ func (w *Weapon) shoot(p *Player, enemies []*Enemy) {
 
 	for i := 0; i < len(enemies); i++ {
 		e = enemies[i]
+
+		// Check if behind a wall
+		visible := true
+		for j := 0; j < len(tiles); j++ {
+			if tiles[j].check_line_in_tile(p.x, p.y, e.x, e.y) {
+				visible = false
+				break
+			}
+		}
+		if !visible {
+			continue
+		}
 
 		dx = e.x - p.x
 		dy = e.y - p.y

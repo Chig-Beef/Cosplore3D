@@ -90,7 +90,7 @@ func (e *Enemy) follow_target(tiles []Tile) {
 	ry -= math.Sin(to_radians(angle)) * e.speed * 2
 	hit := false
 	for i := 0; i < len(tiles); i++ {
-		if tiles[i].check_line_intersect(rx, ry) {
+		if tiles[i].check_point_in_tile(rx, ry) {
 			hit = true
 			break
 		}
@@ -103,7 +103,14 @@ func (e *Enemy) follow_target(tiles []Tile) {
 	e.angle = angle
 }
 
-func (e *Enemy) draw(screen *ebiten.Image, c *Camera) {
+func (e *Enemy) draw(screen *ebiten.Image, c *Camera, tiles []Tile) {
+	for i := 0; i < len(tiles); i++ {
+		if tiles[i].check_line_in_tile(e.x, e.y, c.x, c.y) {
+			// Can't see through a wall
+			return
+		}
+	}
+
 	dx := e.x - c.x
 	dy := e.y - c.y
 	dis := math.Sqrt(math.Pow(dx, 2) + math.Pow(dy, 2))
