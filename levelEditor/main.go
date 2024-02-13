@@ -66,7 +66,7 @@ func (g *Game) Update() error {
 			}
 		}
 
-		if 300 <= g.curMousePos[0] && g.curMousePos[0] <= 350 {
+		if 600 <= g.curMousePos[0] && g.curMousePos[0] <= 650 {
 			if 10 <= g.curMousePos[1] && g.curMousePos[1] <= 60 {
 				save(g, g.level.data)
 			}
@@ -97,7 +97,7 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.Fill(color.Black)
 
-	ebitenutil.DrawRect(screen, 300, 10, 50, 50, color.White)
+	ebitenutil.DrawRect(screen, 600, 10, 50, 50, color.White)
 
 	for row := 0; row < len(g.level.data); row++ {
 		for col := 0; col < len(g.level.data[row]); col++ {
@@ -222,7 +222,7 @@ func save(g *Game, d [][]uint8) {
 	}
 }
 
-func load() Level {
+func load(game *Game) Level {
 	name := "unknown"
 	floorColor := color.RGBA{128, 128, 128, 255}
 	skyColor := color.RGBA{0, 0, 0, 255}
@@ -233,7 +233,7 @@ func load() Level {
 		return Level{name, blank_level(32, 32), floorColor, skyColor}
 	}
 
-	splitData := strings.Split(string(rawData), "\n")
+	splitData := strings.Split(string(rawData), "\r\n")
 
 	colors := strings.Split(splitData[0], "|")
 
@@ -247,25 +247,29 @@ func load() Level {
 
 	r, err := strconv.Atoi(rawFloorColor[0])
 	if err != nil {
-		log.Println("Need integers for colors")
+		log.Println("Need integers for colors floor red")
 		return Level{name, blank_level(32, 32), floorColor, skyColor}
 	}
 
 	g, err := strconv.Atoi(rawFloorColor[1])
 	if err != nil {
-		log.Println("Need integers for colors")
+		log.Println("Need integers for colors floor green")
 		return Level{name, blank_level(32, 32), floorColor, skyColor}
 	}
 
 	b, err := strconv.Atoi(rawFloorColor[2])
 	if err != nil {
-		log.Println("Need integers for colors")
+		log.Println("Need integers for colors floor blue")
 		return Level{name, blank_level(32, 32), floorColor, skyColor}
 	}
 
 	floorColor.R = uint8(r)
 	floorColor.G = uint8(g)
 	floorColor.B = uint8(b)
+
+	game.textBoxes[0].set_value(r)
+	game.textBoxes[1].set_value(g)
+	game.textBoxes[2].set_value(b)
 
 	rawSkyColor := strings.Split(colors[1], ",")
 
@@ -276,25 +280,29 @@ func load() Level {
 
 	r, err = strconv.Atoi(rawSkyColor[0])
 	if err != nil {
-		log.Println("Need integers for colors")
+		log.Println("Need integers for colors sky red")
 		return Level{name, blank_level(32, 32), floorColor, skyColor}
 	}
 
 	g, err = strconv.Atoi(rawSkyColor[1])
 	if err != nil {
-		log.Println("Need integers for colors")
+		log.Println("Need integers for colors sky green")
 		return Level{name, blank_level(32, 32), floorColor, skyColor}
 	}
 
 	b, err = strconv.Atoi(rawSkyColor[2])
 	if err != nil {
-		log.Println("Need integers for colors")
+		log.Println("Need integers for colors sky blue")
 		return Level{name, blank_level(32, 32), floorColor, skyColor}
 	}
 
 	skyColor.R = uint8(r)
 	skyColor.G = uint8(g)
 	skyColor.B = uint8(b)
+
+	game.textBoxes[3].set_value(r)
+	game.textBoxes[4].set_value(g)
+	game.textBoxes[5].set_value(b)
 
 	data := [][]uint8{}
 
@@ -362,7 +370,7 @@ func main() {
 	g.load_fonts()
 	g.create_textboxes()
 
-	g.level = load()
+	g.level = load(g)
 
 	ebiten.SetWindowSize(screenWidth, screenHeight)
 	ebiten.SetWindowTitle("CosEditor")
