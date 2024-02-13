@@ -10,8 +10,10 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"golang.org/x/image/font"
+	"golang.org/x/image/font/opentype"
 )
 
 const (
@@ -25,6 +27,8 @@ type Game struct {
 	fonts        map[string]font.Face
 	curMousePos  [2]int
 	prevMousePos [2]int
+
+	textBoxes [6]TextBox
 
 	curCodeSelection uint8
 
@@ -49,6 +53,10 @@ func (g *Game) Update() error {
 	}
 
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0) {
+		for i := 0; i < len(g.textBoxes); i++ {
+			g.textBoxes[i].check_click(g)
+		}
+
 		col := int(math.Floor(float64(g.curMousePos[0]) / tileSize))
 		row := int(math.Floor(float64(g.curMousePos[1]-160) / tileSize))
 
@@ -58,9 +66,9 @@ func (g *Game) Update() error {
 			}
 		}
 
-		if 10 <= g.curMousePos[0] && g.curMousePos[0] <= 60 {
+		if 300 <= g.curMousePos[0] && g.curMousePos[0] <= 350 {
 			if 10 <= g.curMousePos[1] && g.curMousePos[1] <= 60 {
-				save(g.level.data)
+				save(g, g.level.data)
 			}
 		}
 	}
@@ -78,6 +86,10 @@ func (g *Game) Update() error {
 		}
 	}
 
+	for i := 0; i < len(g.textBoxes); i++ {
+		g.textBoxes[i].update()
+	}
+
 	g.prevMousePos = g.curMousePos
 	return nil
 }
@@ -85,12 +97,17 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.Fill(color.Black)
 
-	ebitenutil.DrawRect(screen, 10, 10, 50, 50, color.White)
+	ebitenutil.DrawRect(screen, 300, 10, 50, 50, color.White)
 
 	for row := 0; row < len(g.level.data); row++ {
 		for col := 0; col < len(g.level.data[row]); col++ {
 			draw_relevant_image(screen, g, g.level.data[row][col], row, col)
 		}
+	}
+
+	//text.Draw(screen, fmt.Sprint(g.level.floorColor, g.level.skyColor), g.fonts["colors"], 0, 18, color.RGBA{255, 255, 255, 255})
+	for i := 0; i < 6; i++ {
+		g.textBoxes[i].draw(screen, g)
 	}
 }
 
@@ -173,8 +190,15 @@ func blank_level(width, height int) [][]uint8 {
 	return output
 }
 
-func save(d [][]uint8) {
-	output := "128,128,128|0,0,0\n"
+func save(g *Game, d [][]uint8) {
+	output := ""
+	for i := 0; i < 2; i++ {
+		for j := 0; j < 3; j++ {
+			output += strconv.Itoa(int(g.textBoxes[i*3+j].value)) + ","
+		}
+		output = output[:len(output)-1] + "|"
+	}
+	output = output[:len(output)-1] + "\n"
 
 	for row := 0; row < len(d); row++ {
 		for col := 0; col < len(d[row]); col++ {
@@ -291,6 +315,43 @@ func load() Level {
 	return Level{name, data, floorColor, skyColor}
 }
 
+func (g *Game) load_fonts() {
+	g.fonts = make(map[string]font.Face)
+
+	tt, err := opentype.Parse(fonts.MPlus1pRegular_ttf)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	const dpi = 20
+	mplusNormalFont, err := opentype.NewFace(tt, &opentype.FaceOptions{
+		Size:    screenHeight/8 - 20,
+		DPI:     dpi,
+		Hinting: font.HintingVertical,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	g.fonts["colors"] = mplusNormalFont
+}
+
+func (g *Game) create_textboxes() {
+	g.textBoxes = [6]TextBox{}
+	for i := 0; i < 6; i++ {
+		g.textBoxes[i] = TextBox{
+			"0",
+			0,
+			float64(i * 62),
+			5,
+			60,
+			20,
+			color.RGBA{64, 64, 64, 255},
+			color.White,
+			false,
+		}
+	}
+}
+
 func main() {
 
 	g := &Game{}
@@ -298,6 +359,8 @@ func main() {
 	g.curCodeSelection = 1
 
 	g.load_images()
+	g.load_fonts()
+	g.create_textboxes()
 
 	g.level = load()
 
