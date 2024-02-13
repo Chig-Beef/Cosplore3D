@@ -156,7 +156,7 @@ func main() {
 		tileSize * 3.5,
 		0,
 		&camera,
-		"cosplorer",
+		"ankaran",
 		10,
 		3,
 		100,
@@ -168,12 +168,6 @@ func main() {
 
 	g.player.x = g.levels[g.player.curLevel].playerStartPos[0]
 	g.player.y = g.levels[g.player.curLevel].playerStartPos[1]
-
-	pre_init_image_columns(g, []string{
-		"cosplorerWall",
-		"ankaranWall",
-		"cosplorerComputer",
-	})
 
 	g.init_audio()
 

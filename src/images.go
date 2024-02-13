@@ -38,12 +38,6 @@ func load_image(g *Game, fName string, mName string) {
 	g.images[mName] = img
 }
 
-func pre_init_image_columns(g *Game, keys []string) {
-	for _, key := range keys {
-		g.imageColumns[key] = &[]*ebiten.Image{}
-	}
-}
-
 func create_image_columns(g *Game, keys []string) {
 	g.imageColumns[""] = &[]*ebiten.Image{}
 
