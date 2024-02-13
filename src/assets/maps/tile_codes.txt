@@ -1,3 +1,0 @@
-Here are the tile codes mean in each file.
-0: Free Space / Air
-1: Wall

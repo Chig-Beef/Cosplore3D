@@ -1,0 +1,11 @@
+Here are the tile codes mean in each file.
+0: Free Space / Air
+1: Cosplorer Wall
+2: Ankaran Wall
+3: Player start position
+4: Progressor
+5: 
+6: Ammo
+7: Cosmium
+8: Heavy Enemy
+9: Light Enemy
