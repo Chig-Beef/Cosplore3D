@@ -56,8 +56,17 @@ func (g *Game) Update() error {
 	}
 
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0) {
+		if 600 <= g.curMousePos[0] && g.curMousePos[0] <= 650 {
+			if 10 <= g.curMousePos[1] && g.curMousePos[1] <= 60 {
+				save(g, g.level.data)
+				return nil
+			}
+		}
+
 		for i := 0; i < len(g.textBoxes); i++ {
-			g.textBoxes[i].check_click(g)
+			if g.textBoxes[i].check_click(g) {
+				return nil
+			}
 		}
 
 		col := int(math.Floor(float64(g.curMousePos[0]+g.offset[0]) / tileSize))
@@ -66,12 +75,6 @@ func (g *Game) Update() error {
 		if row < len(g.level.data) && row >= 0 {
 			if col < len(g.level.data[row]) && col >= 0 {
 				g.level.data[row][col] = g.curCodeSelection
-			}
-		}
-
-		if 600 <= g.curMousePos[0] && g.curMousePos[0] <= 650 {
-			if 10 <= g.curMousePos[1] && g.curMousePos[1] <= 60 {
-				save(g, g.level.data)
 			}
 		}
 	}
@@ -89,16 +92,16 @@ func (g *Game) Update() error {
 		}
 	}
 
-	if ebiten.IsKeyPressed(ebiten.KeyLeft) {
+	if ebiten.IsKeyPressed(ebiten.KeyA) {
 		g.offset[0] -= g.cameraSpeed
 	}
-	if ebiten.IsKeyPressed(ebiten.KeyRight) {
+	if ebiten.IsKeyPressed(ebiten.KeyD) {
 		g.offset[0] += g.cameraSpeed
 	}
-	if ebiten.IsKeyPressed(ebiten.KeyUp) {
+	if ebiten.IsKeyPressed(ebiten.KeyW) {
 		g.offset[1] -= g.cameraSpeed
 	}
-	if ebiten.IsKeyPressed(ebiten.KeyDown) {
+	if ebiten.IsKeyPressed(ebiten.KeyS) {
 		g.offset[1] += g.cameraSpeed
 	}
 
@@ -140,6 +143,14 @@ func draw_relevant_image(screen *ebiten.Image, g *Game, code uint8, row, col int
 		screen.DrawImage(img, &op)
 	case 2:
 		img := g.images["ankaranWall"]
+
+		op := ebiten.DrawImageOptions{}
+		op.GeoM.Scale(tileSize/float64(img.Bounds().Dx()), tileSize/float64(img.Bounds().Dy()))
+		op.GeoM.Translate(float64(col*tileSize-g.offset[0]), float64(row*tileSize-g.offset[1])+160)
+
+		screen.DrawImage(img, &op)
+	case 6:
+		img := g.images["ammo"]
 
 		op := ebiten.DrawImageOptions{}
 		op.GeoM.Scale(tileSize/float64(img.Bounds().Dx()), tileSize/float64(img.Bounds().Dy()))
@@ -213,7 +224,7 @@ func save(g *Game, d [][]uint8) {
 		}
 		output = output[:len(output)-1] + "|"
 	}
-	output = output[:len(output)-1] + "\n"
+	output = output[:len(output)-1] + "\r\n"
 
 	for row := 0; row < len(d); row++ {
 		for col := 0; col < len(d[row]); col++ {
@@ -221,10 +232,10 @@ func save(g *Game, d [][]uint8) {
 			output += ","
 		}
 		// Get rid of extra comma
-		output = output[:len(output)-1] + "\n"
+		output = output[:len(output)-1] + "\r\n"
 	}
 	// Get rid of extra newline
-	output = output[:len(output)-1]
+	output = output[:len(output)-2]
 
 	file, err := os.Create("temp.txt")
 	if err != nil {
@@ -328,7 +339,7 @@ func load(game *Game) Level {
 		for x := 0; x < len(row); x++ {
 			n, err := strconv.Atoi(row[x])
 			if err != nil {
-				log.Println("Need integers for data")
+				log.Println("Need integers for data", x, y)
 				return Level{name, blank_level(32, 32), floorColor, skyColor}
 			}
 			data[y] = append(data[y], uint8(n))

@@ -49,7 +49,7 @@ func (tb *TextBox) draw(screen *ebiten.Image, g *Game) {
 	}
 }
 
-func (tb *TextBox) check_click(g *Game) {
+func (tb *TextBox) check_click(g *Game) bool {
 	x := g.curMousePos[0]
 	y := g.curMousePos[1]
 
@@ -59,8 +59,11 @@ func (tb *TextBox) check_click(g *Game) {
 				tb.correct()
 			}
 			tb.active = !tb.active
+			return true
 		}
 	}
+
+	return false
 }
 
 func (tb *TextBox) update() {
