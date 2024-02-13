@@ -22,6 +22,11 @@ type TextBox struct {
 	active    bool
 }
 
+func (tb *TextBox) set_value(n int) {
+	tb.value = uint8(n)
+	tb.text = strconv.Itoa(n)
+}
+
 func (tb *TextBox) correct() {
 	n, err := strconv.Atoi(tb.text)
 	if err != nil {
