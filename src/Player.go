@@ -12,15 +12,16 @@ import (
 )
 
 type Player struct {
-	x        float64
-	y        float64
-	angle    float64
-	camera   *Camera
-	curLevel string
-	speed    float64
-	haste    float64
-	health   float64
-	weapon   Weapon
+	x         float64
+	y         float64
+	angle     float64
+	camera    *Camera
+	curLevel  string
+	speed     float64
+	haste     float64
+	health    float64
+	weapon    Weapon
+	inventory []string
 }
 
 func (p *Player) update(g *Game) {

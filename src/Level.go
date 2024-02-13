@@ -137,7 +137,7 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 						50,
 						50,
 						[]*ebiten.Image{g.images["cosmium"]},
-						nil,
+						pickup_cosmium,
 					})
 				} else if code == 6 {
 					code = 0
@@ -147,7 +147,7 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 						50,
 						50,
 						[]*ebiten.Image{g.images["ammo"]},
-						giveAmmo,
+						pickup_ammo,
 					})
 				}
 
