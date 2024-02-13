@@ -13,12 +13,13 @@ import (
 )
 
 type Level struct {
-	name       string
-	data       [][]Tile
-	enemies    []*Enemy
-	items      []*Item
-	floorColor color.RGBA
-	skyColor   color.RGBA
+	name           string
+	data           [][]Tile
+	enemies        []*Enemy
+	items          []*Item
+	floorColor     color.RGBA
+	skyColor       color.RGBA
+	playerStartPos [2]float64
 }
 
 func (l Level) draw_floor_sky(screen *ebiten.Image) {
@@ -27,11 +28,6 @@ func (l Level) draw_floor_sky(screen *ebiten.Image) {
 }
 
 func load_levels(g *Game, tileSize float64) map[string]*Level {
-	create_image_columns(g, []string{
-		"cosplorerWall",
-		"ankaranWall",
-	})
-
 	levels := make(map[string]*Level)
 
 	var levelData [][]string
@@ -45,6 +41,8 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 	if err != nil {
 		log.Fatal("failed to load `./assets/maps/levels.json`, file may have been tampered with, reinstall advised")
 	}
+
+	var px, py float64
 
 	// Get every level held in ./maps/
 	for i := 0; i < len(levelData); i++ {
@@ -75,6 +73,12 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 					log.Fatal("failed to load a level correctly")
 				}
 
+				// Player
+				if code == 3 {
+					code = 0
+					px = tileSize * (float64(col) + 0.5)
+					py = tileSize * (float64(row) + 0.5)
+				}
 				// Enemy
 				if code == 9 {
 					code = 0
@@ -159,9 +163,9 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 			}
 		}
 
-		levels[lName] = &Level{lName, tiles, enemies, items, floorColor, skyColor}
+		levels[lName] = &Level{lName, tiles, enemies, items, floorColor, skyColor, [2]float64{px, py}}
 	}
-	g.hasLoadedLevels = true
+
 	return levels
 }
 

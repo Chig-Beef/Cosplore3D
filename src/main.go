@@ -17,14 +17,14 @@ const (
 )
 
 type Game struct {
-	hasLoadedLevels bool
-	levels          map[string]*Level
-	player          *Player
-	images          map[string]*ebiten.Image
-	imageColumns    map[string]*[]*ebiten.Image
-	fonts           map[string]font.Face
-	curMousePos     [2]int
-	prevMousePos    [2]int
+	hasLoadedImageColumns bool
+	levels                map[string]*Level
+	player                *Player
+	images                map[string]*ebiten.Image
+	imageColumns          map[string]*[]*ebiten.Image
+	fonts                 map[string]font.Face
+	curMousePos           [2]int
+	prevMousePos          [2]int
 
 	// Audio
 	musicPlayer   *AudioPlayer
@@ -34,9 +34,13 @@ type Game struct {
 
 func (g *Game) Update() error {
 	//fmt.Println(ebiten.ActualTPS())
-
-	if !g.hasLoadedLevels {
-		g.levels = load_levels(g, tileSize)
+	if !g.hasLoadedImageColumns {
+		create_image_columns(g, []string{
+			"cosplorerWall",
+			"ankaranWall",
+		})
+		apply_image_colums_to_tiles(g, g.levels[g.player.curLevel])
+		return nil
 	}
 
 	select {
@@ -82,6 +86,10 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
+	if !g.hasLoadedImageColumns {
+		return
+	}
+
 	g.levels[g.player.curLevel].draw_floor_sky(screen)
 	g.player.draw(g, screen)
 	g.levels[g.player.curLevel].draw_items_and_enemies(screen, g.player.camera)
@@ -117,6 +125,7 @@ func main() {
 	g := &Game{}
 
 	g.imageColumns = make(map[string]*[]*ebiten.Image)
+	g.hasLoadedImageColumns = false
 
 	g.load_images()
 	g.load_fonts()
@@ -148,6 +157,16 @@ func main() {
 		100,
 		weapon,
 	}
+
+	g.levels = load_levels(g, tileSize)
+
+	g.player.x = g.levels[g.player.curLevel].playerStartPos[0]
+	g.player.y = g.levels[g.player.curLevel].playerStartPos[1]
+
+	pre_init_image_columns(g, []string{
+		"cosplorerWall",
+		"ankaranWall",
+	})
 
 	g.init_audio()
 

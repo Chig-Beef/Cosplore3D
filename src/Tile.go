@@ -115,25 +115,3 @@ func get_color_with_distance(c color.Color, d float64) color.Color {
 		uint8(clr.A),
 	}
 }
-
-func create_image_columns(g *Game, keys []string) {
-	g.imageColumns[""] = &[]*ebiten.Image{}
-
-	for _, key := range keys {
-		img := g.images[key]
-
-		imgW, imgH := img.Size()
-		images := make([]*ebiten.Image, imgW) // Since we know the size we can initialise with size
-		var newImage *ebiten.Image
-		for i := 0; i < imgW; i++ {
-			newImage = ebiten.NewImage(1, imgH)
-			for j := 0; j < imgH; j++ {
-				clr := img.At(i, j)
-				newImage.Set(0, j, clr)
-			}
-			images[i] = newImage
-		}
-
-		g.imageColumns[key] = &images
-	}
-}
