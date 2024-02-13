@@ -56,36 +56,6 @@ func (t *Tile) check_line_in_tile(x1, y1, x2, y2 float64) bool {
 	return false
 }
 
-/*func line_interset(x1, y1, x2, y2, x3, y3, x4, y4 float64) bool {
-	// Calculate the slopes
-	m1 := (y2 - y1) / (x2 - x1)
-	m2 := (y4 - y3) / (x4 - x3)
-
-	// Parallel (or close to apparently?)
-	if math.Abs(m1-m2) < 1e-6 {
-		return false
-	}
-
-	// Int as in intersection, not integer idiot
-	var xInt, yInt float64
-	if math.IsInf(m1, 0) {
-		xInt = x1
-		yInt = m2*(x1-x3) + y3
-	} else if math.IsInf(m2, 0) {
-		xInt = x3
-		yInt = m1*(x3-x1) + y1
-	} else {
-		xInt = (m1*x1 - m2*x3 + y3 - y1) / (m1 - m2)
-		yInt = m1*(xInt-x1) + y1
-	}
-
-	// Massive check
-	return math.Min(x1, x2) <= xInt && xInt <= math.Max(x1, x2) &&
-		math.Min(y1, y2) <= yInt && yInt <= math.Max(y1, y2) &&
-		math.Min(x3, x4) <= xInt && xInt <= math.Max(x3, x4) &&
-		math.Min(y3, y4) <= yInt && yInt <= math.Max(y3, y4)
-}*/
-
 func line_interset(x1, y1, x2, y2, x3, y3, x4, y4 float64) bool {
 	t := ((x1-x3)*(y3-y4) - (y1-y3)*(x3-x4)) / ((x1-x2)*(y3-y4) - (y1-y2)*(x3-x4))
 	u := -((x1-x2)*(y1-y3) - (y1-y2)*(x1-x3)) / ((x1-x2)*(y3-y4) - (y1-y2)*(x3-x4))

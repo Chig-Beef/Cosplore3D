@@ -81,6 +81,10 @@ func (g *Game) Update() error {
 
 	g.kull_enemies()
 
+	for i := 0; i < len(g.levels[g.player.curLevel].progressors); i++ {
+		g.levels[g.player.curLevel].progressors[i].check_collide(g)
+	}
+
 	g.prevMousePos = g.curMousePos
 	return nil
 }
@@ -156,6 +160,7 @@ func main() {
 		3,
 		100,
 		weapon,
+		[]string{},
 	}
 
 	g.levels = load_levels(g, tileSize)

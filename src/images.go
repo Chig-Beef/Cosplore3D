@@ -67,4 +67,5 @@ func apply_image_colums_to_tiles(g *Game, l *Level) {
 			l.data[row][col].imageCols = g.imageColumns[get_tile_image(l.data[row][col].code)]
 		}
 	}
+	l.fullyLoaded = true
 }

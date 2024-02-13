@@ -1,6 +1,8 @@
 package main
 
-import "slices"
+import (
+	"slices"
+)
 
 type Progressor struct {
 	x         float64
@@ -20,7 +22,7 @@ func (p *Progressor) check_collide(g *Game) {
 	if p.x <= x && x <= p.x+p.w {
 		if p.y <= y && y <= p.y+p.h {
 			if p.check(g) {
-				g.player.curLevel = p.levelName
+				g.open_level(p.levelName)
 			}
 		}
 	}

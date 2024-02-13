@@ -20,6 +20,8 @@ type Level struct {
 	floorColor     color.RGBA
 	skyColor       color.RGBA
 	playerStartPos [2]float64
+	progressors    []Progressor
+	fullyLoaded    bool
 }
 
 func (l Level) draw_floor_sky(screen *ebiten.Image) {
@@ -63,6 +65,7 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 		tiles := [][]Tile{}
 		enemies := []*Enemy{}
 		items := []*Item{}
+		progressors := []Progressor{}
 
 		for row := 0; row < len(rawRows); row++ {
 			tiles = append(tiles, []Tile{})
@@ -78,6 +81,18 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 					code = 0
 					px = tileSize * (float64(col) + 0.5)
 					py = tileSize * (float64(row) + 0.5)
+				}
+				// Progressor
+				if code == 4 {
+					code = 0
+					progressors = append(progressors, Progressor{
+						tileSize * (float64(col)),
+						tileSize * (float64(row)),
+						tileSize,
+						tileSize,
+						has_cosmium,
+						"cosplorer",
+					})
 				}
 				// Enemy
 				if code == 9 {
@@ -163,7 +178,7 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 			}
 		}
 
-		levels[lName] = &Level{lName, tiles, enemies, items, floorColor, skyColor, [2]float64{px, py}}
+		levels[lName] = &Level{lName, tiles, enemies, items, floorColor, skyColor, [2]float64{px, py}, progressors, false}
 	}
 
 	return levels
@@ -242,4 +257,15 @@ func (l *Level) draw_items_and_enemies(screen *ebiten.Image, c *Camera) {
 	for i := 0; i < len(l.items); i++ {
 		l.items[i].draw(screen, c, tiles)
 	}
+}
+
+func (g *Game) open_level(levelName string) {
+	g.player.curLevel = levelName
+
+	if !g.levels[levelName].fullyLoaded {
+		apply_image_colums_to_tiles(g, g.levels[levelName])
+	}
+
+	g.player.x = g.levels[levelName].playerStartPos[0]
+	g.player.y = g.levels[levelName].playerStartPos[1]
 }
