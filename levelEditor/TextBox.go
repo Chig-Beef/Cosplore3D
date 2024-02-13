@@ -31,12 +31,13 @@ func (tb *TextBox) correct() {
 		n = 0
 	}
 	tb.value = uint8(n)
+	tb.text = strconv.Itoa(n)
 }
 
 func (tb *TextBox) draw(screen *ebiten.Image, g *Game) {
 	ebitenutil.DrawRect(screen, tb.x, tb.y, tb.w, tb.h, tb.bgColor)
 
-	text.Draw(screen, tb.text, g.fonts["colors"], int(tb.x), int(tb.y), tb.textcolor)
+	text.Draw(screen, tb.text, g.fonts["colors"], int(tb.x+tb.w/2), int(tb.y+tb.h/2), tb.textcolor)
 
 	if tb.active {
 		ebitenutil.DrawLine(screen, tb.x, tb.y+tb.h, tb.x+tb.w, tb.y+tb.h, color.White)
