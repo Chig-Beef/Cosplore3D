@@ -192,6 +192,8 @@ func get_tile_image(code uint8) string {
 		return "cosplorerWall"
 	case 2:
 		return "ankaranWall"
+	case 5:
+		return "cosplorerComputer"
 	default:
 		return "ankaranWall"
 	}

@@ -10,15 +10,22 @@ import (
 func (g *Game) load_images() {
 	g.images = make(map[string]*ebiten.Image)
 
+	// Enemies
 	load_image(g, "blob1", "blobFront")
 	load_image(g, "blob2", "blobRight")
 	load_image(g, "blob3", "blobBack")
 	load_image(g, "blob4", "blobLeft")
 
+	// HUD
 	load_image(g, "heart", "heart")
 	load_image(g, "gun", "gun")
+
+	// Walls
 	load_image(g, "cosplorerWall", "cosplorerWall")
 	load_image(g, "ankaranWall", "ankaranWall")
+	load_image(g, "cosplorerComputer", "cosplorerComputer")
+
+	// Items
 	load_image(g, "cosmium", "cosmium")
 	load_image(g, "ammo", "ammo")
 }

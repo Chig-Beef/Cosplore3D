@@ -157,6 +157,14 @@ func draw_relevant_image(screen *ebiten.Image, g *Game, code uint8, row, col int
 		op.GeoM.Translate(float64(col*tileSize-g.offset[0]), float64(row*tileSize-g.offset[1])+160)
 
 		screen.DrawImage(img, &op)
+	case 5:
+		img := g.images["computer"]
+
+		op := ebiten.DrawImageOptions{}
+		op.GeoM.Scale(tileSize/float64(img.Bounds().Dx()), tileSize/float64(img.Bounds().Dy()))
+		op.GeoM.Translate(float64(col*tileSize-g.offset[0]), float64(row*tileSize-g.offset[1])+160)
+
+		screen.DrawImage(img, &op)
 	case 6:
 		img := g.images["ammo"]
 
@@ -207,6 +215,7 @@ func (g *Game) load_images() {
 	load_image(g, "cosmium", "cosmium")
 	load_image(g, "ammo", "ammo")
 	load_image(g, "heart", "heart")
+	load_image(g, "cosplorerComputer", "computer")
 }
 
 func load_image(g *Game, fName string, mName string) {

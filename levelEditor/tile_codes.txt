@@ -4,7 +4,7 @@ Here are the tile codes mean in each file.
 2: Ankaran Wall
 3: Player start position
 4: Progressor
-5: 
+5: Cosplorer Computer
 6: Ammo
 7: Cosmium
 8: Heavy Enemy

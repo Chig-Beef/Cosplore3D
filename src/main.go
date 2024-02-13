@@ -38,6 +38,7 @@ func (g *Game) Update() error {
 		create_image_columns(g, []string{
 			"cosplorerWall",
 			"ankaranWall",
+			"cosplorerComputer",
 		})
 		apply_image_colums_to_tiles(g, g.levels[g.player.curLevel])
 		return nil
@@ -155,7 +156,7 @@ func main() {
 		tileSize * 3.5,
 		0,
 		&camera,
-		"ankaran",
+		"cosplorer",
 		10,
 		3,
 		100,
@@ -171,6 +172,7 @@ func main() {
 	pre_init_image_columns(g, []string{
 		"cosplorerWall",
 		"ankaranWall",
+		"cosplorerComputer",
 	})
 
 	g.init_audio()
