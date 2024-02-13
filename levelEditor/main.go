@@ -28,6 +28,9 @@ type Game struct {
 	curMousePos  [2]int
 	prevMousePos [2]int
 
+	offset      [2]int
+	cameraSpeed int
+
 	textBoxes [6]TextBox
 
 	curCodeSelection uint8
@@ -57,8 +60,8 @@ func (g *Game) Update() error {
 			g.textBoxes[i].check_click(g)
 		}
 
-		col := int(math.Floor(float64(g.curMousePos[0]) / tileSize))
-		row := int(math.Floor(float64(g.curMousePos[1]-160) / tileSize))
+		col := int(math.Floor(float64(g.curMousePos[0]+g.offset[0]) / tileSize))
+		row := int(math.Floor(float64(g.curMousePos[1]-160+g.offset[1]) / tileSize))
 
 		if row < len(g.level.data) && row >= 0 {
 			if col < len(g.level.data[row]) && col >= 0 {
@@ -76,14 +79,27 @@ func (g *Game) Update() error {
 		g.curCodeSelection++
 	}
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButton2) {
-		col := int(math.Floor(float64(g.curMousePos[0]) / tileSize))
-		row := int(math.Floor(float64(g.curMousePos[1]-160) / tileSize))
+		col := int(math.Floor(float64(g.curMousePos[0]+g.offset[0]) / tileSize))
+		row := int(math.Floor(float64(g.curMousePos[1]-160+g.offset[1]) / tileSize))
 
 		if row < len(g.level.data) && row >= 0 {
 			if col < len(g.level.data[row]) && col >= 0 {
 				g.level.data[row][col] = 0
 			}
 		}
+	}
+
+	if ebiten.IsKeyPressed(ebiten.KeyLeft) {
+		g.offset[0] -= g.cameraSpeed
+	}
+	if ebiten.IsKeyPressed(ebiten.KeyRight) {
+		g.offset[0] += g.cameraSpeed
+	}
+	if ebiten.IsKeyPressed(ebiten.KeyUp) {
+		g.offset[1] -= g.cameraSpeed
+	}
+	if ebiten.IsKeyPressed(ebiten.KeyDown) {
+		g.offset[1] += g.cameraSpeed
 	}
 
 	for i := 0; i < len(g.textBoxes); i++ {
@@ -97,15 +113,14 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.Fill(color.Black)
 
-	ebitenutil.DrawRect(screen, 600, 10, 50, 50, color.White)
-
 	for row := 0; row < len(g.level.data); row++ {
 		for col := 0; col < len(g.level.data[row]); col++ {
 			draw_relevant_image(screen, g, g.level.data[row][col], row, col)
 		}
 	}
 
-	//text.Draw(screen, fmt.Sprint(g.level.floorColor, g.level.skyColor), g.fonts["colors"], 0, 18, color.RGBA{255, 255, 255, 255})
+	ebitenutil.DrawRect(screen, 600, 10, 50, 50, color.White)
+
 	for i := 0; i < 6; i++ {
 		g.textBoxes[i].draw(screen, g)
 	}
@@ -114,13 +129,13 @@ func (g *Game) Draw(screen *ebiten.Image) {
 func draw_relevant_image(screen *ebiten.Image, g *Game, code uint8, row, col int) {
 	switch code {
 	case 0:
-		ebitenutil.DrawRect(screen, float64(col*tileSize), 160+float64(row)*tileSize, tileSize, tileSize, color.Black)
+		ebitenutil.DrawRect(screen, float64(col*tileSize-g.offset[0]), 160+float64(row*tileSize-g.offset[1]), tileSize, tileSize, color.Black)
 	case 1:
 		img := g.images["cosplorerWall"]
 
 		op := ebiten.DrawImageOptions{}
 		op.GeoM.Scale(tileSize/float64(img.Bounds().Dx()), tileSize/float64(img.Bounds().Dy()))
-		op.GeoM.Translate(float64(col)*tileSize, float64(row)*tileSize+160)
+		op.GeoM.Translate(float64(col*tileSize-g.offset[0]), float64(row*tileSize-g.offset[1])+160)
 
 		screen.DrawImage(img, &op)
 	case 2:
@@ -128,7 +143,7 @@ func draw_relevant_image(screen *ebiten.Image, g *Game, code uint8, row, col int
 
 		op := ebiten.DrawImageOptions{}
 		op.GeoM.Scale(tileSize/float64(img.Bounds().Dx()), tileSize/float64(img.Bounds().Dy()))
-		op.GeoM.Translate(float64(col)*tileSize, float64(row)*tileSize+160)
+		op.GeoM.Translate(float64(col*tileSize-g.offset[0]), float64(row*tileSize-g.offset[1])+160)
 
 		screen.DrawImage(img, &op)
 	case 7:
@@ -136,7 +151,7 @@ func draw_relevant_image(screen *ebiten.Image, g *Game, code uint8, row, col int
 
 		op := ebiten.DrawImageOptions{}
 		op.GeoM.Scale(tileSize/float64(img.Bounds().Dx()), tileSize/float64(img.Bounds().Dy()))
-		op.GeoM.Translate(float64(col)*tileSize, float64(row)*tileSize+160)
+		op.GeoM.Translate(float64(col*tileSize-g.offset[0]), float64(row*tileSize-g.offset[1])+160)
 
 		screen.DrawImage(img, &op)
 	case 8:
@@ -144,7 +159,7 @@ func draw_relevant_image(screen *ebiten.Image, g *Game, code uint8, row, col int
 
 		op := ebiten.DrawImageOptions{}
 		op.GeoM.Scale(tileSize/float64(img.Bounds().Dx()), tileSize/float64(img.Bounds().Dy()))
-		op.GeoM.Translate(float64(col)*tileSize, float64(row)*tileSize+160)
+		op.GeoM.Translate(float64(col*tileSize-g.offset[0]), float64(row*tileSize-g.offset[1])+160)
 
 		screen.DrawImage(img, &op)
 	case 9:
@@ -152,11 +167,11 @@ func draw_relevant_image(screen *ebiten.Image, g *Game, code uint8, row, col int
 
 		op := ebiten.DrawImageOptions{}
 		op.GeoM.Scale(tileSize/float64(img.Bounds().Dx()), tileSize/float64(img.Bounds().Dy()))
-		op.GeoM.Translate(float64(col)*tileSize, float64(row)*tileSize+160)
+		op.GeoM.Translate(float64(col*tileSize-g.offset[0]), float64(row*tileSize-g.offset[1])+160)
 
 		screen.DrawImage(img, &op)
 	default:
-		ebitenutil.DrawRect(screen, float64(col*tileSize), 160+float64(row)*tileSize, tileSize, tileSize, color.RGBA{255, 0, 0, 255})
+		ebitenutil.DrawRect(screen, float64(col*tileSize-g.offset[0]), 160+float64(row*tileSize-g.offset[1]), tileSize, tileSize, color.RGBA{255, 0, 0, 255})
 	}
 }
 
@@ -371,6 +386,8 @@ func main() {
 	g.create_textboxes()
 
 	g.level = load(g)
+
+	g.cameraSpeed = 5
 
 	ebiten.SetWindowSize(screenWidth, screenHeight)
 	ebiten.SetWindowTitle("CosEditor")
