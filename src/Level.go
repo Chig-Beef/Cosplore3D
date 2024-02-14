@@ -100,8 +100,8 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 					enemies = append(enemies, &Enemy{
 						tileSize * (float64(col) + 0.5),
 						tileSize * (float64(row) + 0.5),
-						200,
-						200,
+						100,
+						70,
 						0,
 						[]*ebiten.Image{
 							g.images["blobFront"],
@@ -123,14 +123,14 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 					enemies = append(enemies, &Enemy{
 						tileSize * (float64(col) + 0.5),
 						tileSize * (float64(row) + 0.5),
-						200,
-						200,
+						100,
+						180,
 						0,
 						[]*ebiten.Image{
-							g.images["blobFront"],
-							g.images["blobLeft"],
-							g.images["blobBack"],
-							g.images["blobRight"],
+							g.images["crewmateFront"],
+							g.images["crewmateLeft"],
+							g.images["crewmateBack"],
+							g.images["crewmateRight"],
 						},
 						nil,
 						200,

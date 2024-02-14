@@ -127,6 +127,8 @@ func (e *Enemy) draw(screen *ebiten.Image, c *Camera, tiles []Tile) {
 
 	angle = bound_angle(angle)
 
+	dis *= math.Cos(to_radians(angle))
+
 	if angle > c.fov/2.0 && angle < 360-c.fov/2.0 {
 		return
 	}
@@ -152,12 +154,12 @@ func (e *Enemy) draw(screen *ebiten.Image, c *Camera, tiles []Tile) {
 	}
 
 	ogW, ogH := img.Size()
-	sW := float64(ogW) / (dis / tileSize) * e.w / tileSize
-	sH := float64(ogH) / (dis / tileSize) * e.h / tileSize
+	sW := ((float64(tileSize) * screenHeight) * (e.w / tileSize) / dis) / float64(ogW)
+	sH := ((float64(tileSize) * screenHeight) * (e.h / tileSize) / dis) / float64(ogH)
 
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Scale(sW, sH)
-	op.GeoM.Translate(lineX-(sW*float64(ogW)/2.0), screenHeight/2+sH*float64(ogH))
+	op.GeoM.Translate(lineX-(sW*float64(ogW)/2.0), screenHeight/2+((float64(tileSize)*screenHeight)/dis/2)-(sH*float64(ogH)))
 	screen.DrawImage(img, op)
 }
 
