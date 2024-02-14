@@ -141,6 +141,29 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 						10,
 						30,
 					})
+				} else if code == 10 { // Crawler
+					code = 0
+					enemies = append(enemies, &Enemy{
+						tileSize * (float64(col) + 0.5),
+						tileSize * (float64(row) + 0.5),
+						100,
+						70,
+						0,
+						[]*ebiten.Image{
+							g.images["crawlerFront"],
+							g.images["crawlerLeft"],
+							g.images["crawlerBack"],
+							g.images["crawlerRight"],
+						},
+						nil,
+						100,
+						3,
+						1,
+						24,
+						5 * tileSize,
+						10,
+						24,
+					})
 				}
 
 				// Item

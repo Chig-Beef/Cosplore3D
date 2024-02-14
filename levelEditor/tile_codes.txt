@@ -7,5 +7,6 @@ Here are the tile codes mean in each file.
 5: Cosplorer Computer
 6: Ammo
 7: Cosmium
-8: Heavy Enemy
-9: Light Enemy
+8: Infected Crewmate
+9: Blob
+10: Trash Crawler

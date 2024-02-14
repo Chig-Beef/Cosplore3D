@@ -19,6 +19,10 @@ func (g *Game) load_images() {
 	load_image(g, "crewmate2", "crewmateRight")
 	load_image(g, "crewmate3", "crewmateBack")
 	load_image(g, "crewmate4", "crewmateLeft")
+	load_image(g, "crawler1", "crawlerFront")
+	load_image(g, "crawler2", "crawlerRight")
+	load_image(g, "crawler3", "crawlerBack")
+	load_image(g, "crawler4", "crawlerLeft")
 
 	// HUD
 	load_image(g, "heart", "heart")
