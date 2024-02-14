@@ -31,3 +31,7 @@ func (p *Progressor) check_collide(g *Game) {
 func has_cosmium(g *Game) bool {
 	return slices.Contains(g.player.inventory, "Cosmium")
 }
+
+func has_no_cosmium(g *Game) bool {
+	return !slices.Contains(g.player.inventory, "Cosmium")
+}

@@ -76,14 +76,12 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 					log.Fatal("failed to load a level correctly")
 				}
 
-				// Player
-				if code == 3 {
+				switch code {
+				case 10: // Player
 					code = 0
 					px = tileSize * (float64(col) + 0.5)
 					py = tileSize * (float64(row) + 0.5)
-				}
-				// Progressor
-				if code == 4 {
+				case 20: // Progressor (Has Cosmium)
 					code = 0
 					progressors = append(progressors, Progressor{
 						tileSize * (float64(col)),
@@ -93,9 +91,37 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 						has_cosmium,
 						"cosplorer",
 					})
-				}
-				// Enemy
-				if code == 9 { // Blob
+				case 21: // Progressor (Has No Cosmium)
+					code = 0
+					progressors = append(progressors, Progressor{
+						tileSize * (float64(col)),
+						tileSize * (float64(row)),
+						tileSize,
+						tileSize,
+						has_no_cosmium,
+						"ankaran",
+					})
+				case 30: // Ammo
+					code = 0
+					items = append(items, &Item{
+						tileSize * (float64(col) + 0.5),
+						tileSize * (float64(row) + 0.5),
+						50,
+						50,
+						[]*ebiten.Image{g.images["ammo"]},
+						pickup_ammo,
+					})
+				case 31: // Cosmium
+					code = 0
+					items = append(items, &Item{
+						tileSize * (float64(col) + 0.5),
+						tileSize * (float64(row) + 0.5),
+						50,
+						50,
+						[]*ebiten.Image{g.images["cosmium"]},
+						pickup_cosmium,
+					})
+				case 40: // Blob
 					code = 0
 					enemies = append(enemies, &Enemy{
 						tileSize * (float64(col) + 0.5),
@@ -118,7 +144,7 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 						10,
 						60,
 					})
-				} else if code == 8 { // Infected Crewmate
+				case 41: // Infected Crewmate
 					code = 0
 					enemies = append(enemies, &Enemy{
 						tileSize * (float64(col) + 0.5),
@@ -141,7 +167,7 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 						10,
 						30,
 					})
-				} else if code == 10 { // Crawler
+				case 42: // Trash Crawler
 					code = 0
 					enemies = append(enemies, &Enemy{
 						tileSize * (float64(col) + 0.5),
@@ -163,29 +189,6 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 						5 * tileSize,
 						10,
 						24,
-					})
-				}
-
-				// Item
-				if code == 7 {
-					code = 0
-					items = append(items, &Item{
-						tileSize * (float64(col) + 0.5),
-						tileSize * (float64(row) + 0.5),
-						50,
-						50,
-						[]*ebiten.Image{g.images["cosmium"]},
-						pickup_cosmium,
-					})
-				} else if code == 6 {
-					code = 0
-					items = append(items, &Item{
-						tileSize * (float64(col) + 0.5),
-						tileSize * (float64(row) + 0.5),
-						50,
-						50,
-						[]*ebiten.Image{g.images["ammo"]},
-						pickup_ammo,
 					})
 				}
 
@@ -212,10 +215,10 @@ func get_tile_image(code uint8) string {
 	case 0:
 		return ""
 	case 1:
-		return "cosplorerWall"
-	case 2:
 		return "ankaranWall"
-	case 5:
+	case 2:
+		return "cosplorerWall"
+	case 3:
 		return "cosplorerComputer"
 	default:
 		return "ankaranWall"

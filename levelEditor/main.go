@@ -78,8 +78,17 @@ func (g *Game) Update() error {
 			}
 		}
 	}
-	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButton1) {
+	if inpututil.IsKeyJustPressed(ebiten.KeyR) {
 		g.curCodeSelection++
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyF) {
+		g.curCodeSelection--
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyJ) {
+		g.curCodeSelection -= 10
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyU) {
+		g.curCodeSelection += 10
 	}
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButton2) {
 		col := int(math.Floor(float64(g.curMousePos[0]+g.offset[0]) / tileSize))
@@ -133,15 +142,9 @@ func draw_relevant_image(screen *ebiten.Image, g *Game, code uint8, row, col int
 	switch code {
 	case 0:
 		ebitenutil.DrawRect(screen, float64(col*tileSize-g.offset[0]), 160+float64(row*tileSize-g.offset[1]), tileSize, tileSize, color.Black)
+
+	// Walls
 	case 1:
-		img := g.images["cosplorerWall"]
-
-		op := ebiten.DrawImageOptions{}
-		op.GeoM.Scale(tileSize/float64(img.Bounds().Dx()), tileSize/float64(img.Bounds().Dy()))
-		op.GeoM.Translate(float64(col*tileSize-g.offset[0]), float64(row*tileSize-g.offset[1])+160)
-
-		screen.DrawImage(img, &op)
-	case 2:
 		img := g.images["ankaranWall"]
 
 		op := ebiten.DrawImageOptions{}
@@ -149,15 +152,15 @@ func draw_relevant_image(screen *ebiten.Image, g *Game, code uint8, row, col int
 		op.GeoM.Translate(float64(col*tileSize-g.offset[0]), float64(row*tileSize-g.offset[1])+160)
 
 		screen.DrawImage(img, &op)
-	case 3:
-		img := g.images["heart"]
+	case 2:
+		img := g.images["cosplorerWall"]
 
 		op := ebiten.DrawImageOptions{}
 		op.GeoM.Scale(tileSize/float64(img.Bounds().Dx()), tileSize/float64(img.Bounds().Dy()))
 		op.GeoM.Translate(float64(col*tileSize-g.offset[0]), float64(row*tileSize-g.offset[1])+160)
 
 		screen.DrawImage(img, &op)
-	case 5:
+	case 3:
 		img := g.images["computer"]
 
 		op := ebiten.DrawImageOptions{}
@@ -165,7 +168,19 @@ func draw_relevant_image(screen *ebiten.Image, g *Game, code uint8, row, col int
 		op.GeoM.Translate(float64(col*tileSize-g.offset[0]), float64(row*tileSize-g.offset[1])+160)
 
 		screen.DrawImage(img, &op)
-	case 6:
+
+	// Markers
+	case 10:
+		img := g.images["heart"]
+
+		op := ebiten.DrawImageOptions{}
+		op.GeoM.Scale(tileSize/float64(img.Bounds().Dx()), tileSize/float64(img.Bounds().Dy()))
+		op.GeoM.Translate(float64(col*tileSize-g.offset[0]), float64(row*tileSize-g.offset[1])+160)
+
+		screen.DrawImage(img, &op)
+
+	// Items
+	case 30:
 		img := g.images["ammo"]
 
 		op := ebiten.DrawImageOptions{}
@@ -173,7 +188,7 @@ func draw_relevant_image(screen *ebiten.Image, g *Game, code uint8, row, col int
 		op.GeoM.Translate(float64(col*tileSize-g.offset[0]), float64(row*tileSize-g.offset[1])+160)
 
 		screen.DrawImage(img, &op)
-	case 7:
+	case 31:
 		img := g.images["cosmium"]
 
 		op := ebiten.DrawImageOptions{}
@@ -181,15 +196,9 @@ func draw_relevant_image(screen *ebiten.Image, g *Game, code uint8, row, col int
 		op.GeoM.Translate(float64(col*tileSize-g.offset[0]), float64(row*tileSize-g.offset[1])+160)
 
 		screen.DrawImage(img, &op)
-	case 8:
-		img := g.images["crewmateLeft"]
 
-		op := ebiten.DrawImageOptions{}
-		op.GeoM.Scale(tileSize/float64(img.Bounds().Dx()), tileSize/float64(img.Bounds().Dy()))
-		op.GeoM.Translate(float64(col*tileSize-g.offset[0]), float64(row*tileSize-g.offset[1])+160)
-
-		screen.DrawImage(img, &op)
-	case 9:
+	// Enemies
+	case 40:
 		img := g.images["blobFront"]
 
 		op := ebiten.DrawImageOptions{}
@@ -197,7 +206,15 @@ func draw_relevant_image(screen *ebiten.Image, g *Game, code uint8, row, col int
 		op.GeoM.Translate(float64(col*tileSize-g.offset[0]), float64(row*tileSize-g.offset[1])+160)
 
 		screen.DrawImage(img, &op)
-	case 10:
+	case 41:
+		img := g.images["crewmateLeft"]
+
+		op := ebiten.DrawImageOptions{}
+		op.GeoM.Scale(tileSize/float64(img.Bounds().Dx()), tileSize/float64(img.Bounds().Dy()))
+		op.GeoM.Translate(float64(col*tileSize-g.offset[0]), float64(row*tileSize-g.offset[1])+160)
+
+		screen.DrawImage(img, &op)
+	case 42:
 		img := g.images["crawlerFront"]
 
 		op := ebiten.DrawImageOptions{}

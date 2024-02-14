@@ -1,12 +1,61 @@
 Here are the tile codes mean in each file.
 0: Free Space / Air
-1: Cosplorer Wall
-2: Ankaran Wall
-3: Player start position
-4: Progressor
-5: Cosplorer Computer
-6: Ammo
-7: Cosmium
-8: Infected Crewmate
-9: Blob
-10: Trash Crawler
+
+Walls
+1: Ankaran Wall
+2: Cosplorer Wall
+3: Cosplorer Computer
+4: 
+5: 
+6: 
+7: 
+8: 
+9: 
+
+Markers
+10: Player start position
+11: 
+12: 
+13: 
+14: 
+15: 
+16: 
+17: 
+18: 
+19: 
+
+Progressors
+20: Has Cosmium
+21: Has No Cosmium
+22: 
+23: 
+24: 
+25: 
+26: 
+27: 
+28: 
+29: 
+
+Items
+30: Ammo
+31: Cosmium
+32: 
+33: 
+34: 
+35: 
+36: 
+37: 
+38: 
+39: 
+
+Enemies
+40: Blob
+41: Infected Crewmate
+42: Trash Crawler
+43: 
+44: 
+45: 
+46: 
+47: 
+48: 
+49: 
