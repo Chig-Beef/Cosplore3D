@@ -95,7 +95,7 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 					})
 				}
 				// Enemy
-				if code == 9 {
+				if code == 9 { // Blob
 					code = 0
 					enemies = append(enemies, &Enemy{
 						tileSize * (float64(col) + 0.5),
@@ -118,7 +118,7 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 						10,
 						60,
 					})
-				} else if code == 8 {
+				} else if code == 8 { // Infected Crewmate
 					code = 0
 					enemies = append(enemies, &Enemy{
 						tileSize * (float64(col) + 0.5),
@@ -133,9 +133,9 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 							g.images["crewmateRight"],
 						},
 						nil,
-						200,
+						120,
 						2,
-						2,
+						1.5,
 						30,
 						5 * tileSize,
 						10,

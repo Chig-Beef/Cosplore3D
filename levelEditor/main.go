@@ -182,7 +182,7 @@ func draw_relevant_image(screen *ebiten.Image, g *Game, code uint8, row, col int
 
 		screen.DrawImage(img, &op)
 	case 8:
-		img := g.images["blobFront"]
+		img := g.images["crewmateLeft"]
 
 		op := ebiten.DrawImageOptions{}
 		op.GeoM.Scale(tileSize/float64(img.Bounds().Dx()), tileSize/float64(img.Bounds().Dy()))
@@ -210,6 +210,7 @@ func (g *Game) load_images() {
 	g.images = make(map[string]*ebiten.Image)
 
 	load_image(g, "blob1", "blobFront")
+	load_image(g, "crewmate2", "crewmateLeft")
 	load_image(g, "cosplorerWall", "cosplorerWall")
 	load_image(g, "ankaranWall", "ankaranWall")
 	load_image(g, "cosmium", "cosmium")
