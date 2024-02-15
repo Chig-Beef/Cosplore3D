@@ -39,6 +39,7 @@ func (g *Game) Update() error {
 			"cosplorerWall",
 			"ankaranWall",
 			"cosplorerComputer",
+			"cosplorerReactor",
 		})
 		apply_image_colums_to_tiles(g, g.levels[g.player.curLevel])
 		return nil
@@ -84,6 +85,9 @@ func (g *Game) Update() error {
 
 	for i := 0; i < len(g.levels[g.player.curLevel].progressors); i++ {
 		g.levels[g.player.curLevel].progressors[i].check_collide(g)
+	}
+	for i := 0; i < len(g.levels[g.player.curLevel].triggers); i++ {
+		g.levels[g.player.curLevel].triggers[i].check_collide(g)
 	}
 
 	g.prevMousePos = g.curMousePos

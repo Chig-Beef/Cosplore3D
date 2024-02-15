@@ -32,6 +32,7 @@ func (g *Game) load_images() {
 	load_image(g, "cosplorerWall", "cosplorerWall")
 	load_image(g, "ankaranWall", "ankaranWall")
 	load_image(g, "cosplorerComputer", "cosplorerComputer")
+	load_image(g, "cosplorerReactor", "cosplorerReactor")
 
 	// Items
 	load_image(g, "cosmium", "cosmium")

@@ -1,6 +1,6 @@
 module Cosplore3D
 
-go 1.21.6
+go 1.22.0
 
 require (
 	github.com/hajimehoshi/ebiten v1.12.12

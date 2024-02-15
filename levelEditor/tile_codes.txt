@@ -5,7 +5,7 @@ Walls
 1: Ankaran Wall
 2: Cosplorer Wall
 3: Cosplorer Computer
-4: 
+4: Cosplorer Reactor
 5: 
 6: 
 7: 
@@ -59,3 +59,15 @@ Enemies
 47: 
 48: 
 49: 
+
+Triggers
+50: Rid Cosmium
+51: 
+52: 
+53: 
+54:
+55: 
+56: 
+57: 
+58: 
+59: 

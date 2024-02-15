@@ -21,6 +21,7 @@ type Level struct {
 	skyColor       color.RGBA
 	playerStartPos [2]float64
 	progressors    []Progressor
+	triggers       []Trigger
 	fullyLoaded    bool
 }
 
@@ -66,6 +67,7 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 		enemies := []*Enemy{}
 		items := []*Item{}
 		progressors := []Progressor{}
+		triggers := []Trigger{}
 
 		for row := 0; row < len(rawRows); row++ {
 			tiles = append(tiles, []Tile{})
@@ -190,6 +192,15 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 						10,
 						24,
 					})
+				case 50: // Trigger (rid Cosmium)
+					code = 0
+					triggers = append(triggers, Trigger{
+						tileSize * (float64(col)),
+						tileSize * (float64(row)),
+						tileSize,
+						tileSize,
+						rid_cosmium,
+					})
 				}
 
 				tiles[row] = append(tiles[row], Tile{
@@ -204,7 +215,7 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 			}
 		}
 
-		levels[lName] = &Level{lName, tiles, enemies, items, floorColor, skyColor, [2]float64{px, py}, progressors, false}
+		levels[lName] = &Level{lName, tiles, enemies, items, floorColor, skyColor, [2]float64{px, py}, progressors, triggers, false}
 	}
 
 	return levels
@@ -220,6 +231,8 @@ func get_tile_image(code uint8) string {
 		return "cosplorerWall"
 	case 3:
 		return "cosplorerComputer"
+	case 4:
+		return "cosplorerReactor"
 	default:
 		return "ankaranWall"
 	}
