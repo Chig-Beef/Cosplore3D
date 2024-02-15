@@ -24,6 +24,25 @@ type Enemy struct {
 	attackCooldown uint8
 }
 
+func create_new_enemy(col, row int, w, h float64, images []*ebiten.Image, health, speed, damage float64, roa uint8, dov, attackRange float64) *Enemy {
+	return &Enemy{
+		tileSize * (float64(col) + 0.5),
+		tileSize * (float64(row) + 0.5),
+		w,
+		h,
+		0,
+		images,
+		nil,
+		health,
+		speed,
+		damage,
+		roa,
+		dov * tileSize,
+		attackRange,
+		roa,
+	}
+}
+
 func (e *Enemy) update(g *Game, tiles []Tile) {
 	if e.target != nil {
 		e.follow_target(tiles)

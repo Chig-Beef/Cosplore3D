@@ -125,73 +125,67 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 					})
 				case 40: // Blob
 					code = 0
-					enemies = append(enemies, &Enemy{
-						tileSize * (float64(col) + 0.5),
-						tileSize * (float64(row) + 0.5),
+					enemies = append(enemies, create_new_enemy(
+						col,
+						row,
 						100,
 						70,
-						0,
 						[]*ebiten.Image{
 							g.images["blobFront"],
 							g.images["blobLeft"],
 							g.images["blobBack"],
 							g.images["blobRight"],
 						},
-						nil,
 						100,
 						1,
 						1,
 						60,
-						5 * tileSize,
+						5,
 						10,
-						60,
-					})
+					),
+					)
 				case 41: // Infected Crewmate
 					code = 0
-					enemies = append(enemies, &Enemy{
-						tileSize * (float64(col) + 0.5),
-						tileSize * (float64(row) + 0.5),
+					enemies = append(enemies, create_new_enemy(
+						col,
+						row,
 						100,
 						180,
-						0,
 						[]*ebiten.Image{
 							g.images["crewmateFront"],
 							g.images["crewmateLeft"],
 							g.images["crewmateBack"],
 							g.images["crewmateRight"],
 						},
-						nil,
 						120,
 						2,
 						1.5,
 						30,
-						5 * tileSize,
+						5,
 						10,
-						30,
-					})
+					),
+					)
 				case 42: // Trash Crawler
 					code = 0
-					enemies = append(enemies, &Enemy{
-						tileSize * (float64(col) + 0.5),
-						tileSize * (float64(row) + 0.5),
+					enemies = append(enemies, create_new_enemy(
+						col,
+						row,
 						100,
 						70,
-						0,
 						[]*ebiten.Image{
 							g.images["crawlerFront"],
 							g.images["crawlerLeft"],
 							g.images["crawlerBack"],
 							g.images["crawlerRight"],
 						},
-						nil,
 						100,
 						3,
 						1,
 						24,
-						5 * tileSize,
+						5,
 						10,
-						24,
-					})
+					),
+					)
 				case 50: // Trigger (rid Cosmium)
 					code = 0
 					triggers = append(triggers, Trigger{
