@@ -42,7 +42,7 @@ func (g *Game) Update() error {
 			"cosplorerReactor",
 			"enikokoWall",
 		})
-		apply_image_colums_to_tiles(g, g.levels[g.player.curLevel])
+		apply_image_columns_to_tiles(g, g.levels[g.player.curLevel])
 		return nil
 	}
 
@@ -81,15 +81,8 @@ func (g *Game) Update() error {
 	}
 
 	g.player.update(g)
-
 	g.kull_enemies()
-
-	for i := 0; i < len(g.levels[g.player.curLevel].progressors); i++ {
-		g.levels[g.player.curLevel].progressors[i].check_collide(g)
-	}
-	for i := 0; i < len(g.levels[g.player.curLevel].triggers); i++ {
-		g.levels[g.player.curLevel].triggers[i].check_collide(g)
-	}
+	g.levels[g.player.curLevel].update_progressors_and_triggers(g)
 
 	g.prevMousePos = g.curMousePos
 	return nil

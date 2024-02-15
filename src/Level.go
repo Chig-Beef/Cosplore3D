@@ -25,6 +25,15 @@ type Level struct {
 	fullyLoaded    bool
 }
 
+func (l *Level) update_progressors_and_triggers(g *Game) {
+	for i := 0; i < len(l.progressors); i++ {
+		l.progressors[i].check_collide(g)
+	}
+	for i := 0; i < len(l.triggers); i++ {
+		l.triggers[i].check_collide(g)
+	}
+}
+
 func (l Level) draw_floor_sky(screen *ebiten.Image) {
 	screen.Fill(l.skyColor)
 	ebitenutil.DrawRect(screen, 0, screenHeight/2, screenWidth, screenHeight/2, l.floorColor)
@@ -300,7 +309,7 @@ func (g *Game) open_level(levelName string) {
 	g.player.curLevel = levelName
 
 	if !g.levels[levelName].fullyLoaded {
-		apply_image_colums_to_tiles(g, g.levels[levelName])
+		apply_image_columns_to_tiles(g, g.levels[levelName])
 	}
 
 	g.player.x = g.levels[levelName].playerStartPos[0]

@@ -72,7 +72,7 @@ func create_image_columns(g *Game, keys []string) {
 	g.hasLoadedImageColumns = true
 }
 
-func apply_image_colums_to_tiles(g *Game, l *Level) {
+func apply_image_columns_to_tiles(g *Game, l *Level) {
 	for row := 0; row < len(l.data); row++ {
 		for col := 0; col < len(l.data[row]); col++ {
 			l.data[row][col].imageCols = g.imageColumns[get_tile_image(l.data[row][col].code)]
