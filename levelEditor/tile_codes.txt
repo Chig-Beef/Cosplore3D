@@ -6,7 +6,7 @@ Walls
 2: Cosplorer Wall
 3: Cosplorer Computer
 4: Cosplorer Reactor
-5: 
+5: Enikoko Wall
 6: 
 7: 
 8: 

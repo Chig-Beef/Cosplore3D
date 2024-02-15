@@ -233,6 +233,8 @@ func get_tile_image(code uint8) string {
 		return "cosplorerComputer"
 	case 4:
 		return "cosplorerReactor"
+	case 5:
+		return "enikokoWall"
 	default:
 		return "ankaranWall"
 	}

@@ -40,6 +40,7 @@ func (g *Game) Update() error {
 			"ankaranWall",
 			"cosplorerComputer",
 			"cosplorerReactor",
+			"enikokoWall",
 		})
 		apply_image_colums_to_tiles(g, g.levels[g.player.curLevel])
 		return nil
@@ -160,7 +161,7 @@ func main() {
 		tileSize * 3.5,
 		0,
 		&camera,
-		"ankaran",
+		"enikoko",
 		10,
 		3,
 		100,

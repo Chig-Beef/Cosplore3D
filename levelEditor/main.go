@@ -176,6 +176,14 @@ func draw_relevant_image(screen *ebiten.Image, g *Game, code uint8, row, col int
 		op.GeoM.Translate(float64(col*tileSize-g.offset[0]), float64(row*tileSize-g.offset[1])+160)
 
 		screen.DrawImage(img, &op)
+	case 5:
+		img := g.images["enikokoWall"]
+
+		op := ebiten.DrawImageOptions{}
+		op.GeoM.Scale(tileSize/float64(img.Bounds().Dx()), tileSize/float64(img.Bounds().Dy()))
+		op.GeoM.Translate(float64(col*tileSize-g.offset[0]), float64(row*tileSize-g.offset[1])+160)
+
+		screen.DrawImage(img, &op)
 
 	// Markers
 	case 10:
@@ -247,6 +255,7 @@ func (g *Game) load_images() {
 	load_image(g, "crawler1", "crawlerFront")
 	load_image(g, "cosplorerWall", "cosplorerWall")
 	load_image(g, "ankaranWall", "ankaranWall")
+	load_image(g, "enikokoWall", "enikokoWall")
 	load_image(g, "cosmium", "cosmium")
 	load_image(g, "ammo", "ammo")
 	load_image(g, "heart", "heart")
