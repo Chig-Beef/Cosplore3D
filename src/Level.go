@@ -110,7 +110,7 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 						tileSize,
 						tileSize,
 						has_no_cosmium,
-						"ankaran",
+						"enikoko",
 					})
 				case 30: // Ammo
 					code = 0

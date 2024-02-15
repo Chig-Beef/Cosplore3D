@@ -154,7 +154,7 @@ func main() {
 		tileSize * 3.5,
 		0,
 		&camera,
-		"enikoko",
+		"ankaran",
 		10,
 		3,
 		100,
