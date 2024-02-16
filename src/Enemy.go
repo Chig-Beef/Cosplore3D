@@ -83,6 +83,16 @@ func (e *Enemy) attack_target() {
 	}
 }
 
+func (e *Enemy) get_distance(c *Camera, useSqrt bool) float64 {
+	dx := e.x - c.x
+	dy := e.y - c.y
+	if useSqrt { // If this ever gets slow, just use fastinvsqrt, and see if it approximates well enough
+		return math.Sqrt(math.Pow(dx, 2) + math.Pow(dy, 2))
+	} else { // Eliminates a SQRT call, improving performance
+		return math.Pow(dx, 2) + math.Pow(dy, 2)
+	}
+}
+
 func (e *Enemy) follow_target(tiles []Tile) {
 	var dx, dy, dis, angle float64
 
