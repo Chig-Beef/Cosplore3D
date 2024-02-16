@@ -34,6 +34,7 @@ func (g *Game) load_images() {
 	load_image(g, "cosplorerComputer", "cosplorerComputer")
 	load_image(g, "cosplorerReactor", "cosplorerReactor")
 	load_image(g, "enikokoWall", "enikokoWall")
+	load_image(g, "schmeltoolWall", "schmeltoolWall")
 
 	// Items
 	load_image(g, "cosmium", "cosmium")
