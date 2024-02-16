@@ -245,7 +245,7 @@ func get_tile_image(code uint8) string {
 	case 3:
 		return "cosplorerComputer"
 	case 4:
-		return "cosplorerReactor"
+		return "cosplorerReactorEmpty"
 	case 5:
 		return "enikokoWall"
 	case 6:

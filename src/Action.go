@@ -20,4 +20,12 @@ func rid_cosmium(g *Game) {
 			break
 		}
 	}
+	l := g.levels[g.player.curLevel]
+	for row := 0; row < len(l.data); row++ {
+		for col := 0; col < len(l.data[row]); col++ {
+			if l.data[row][col].code == 4 { // Cosplorer Reactor
+				l.data[row][col].imageCols = g.imageColumns["cosplorerReactor"]
+			}
+		}
+	}
 }

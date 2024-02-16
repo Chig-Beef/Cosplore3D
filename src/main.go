@@ -39,6 +39,7 @@ func (g *Game) Update() error {
 			"cosplorerWall",
 			"ankaranWall",
 			"cosplorerComputer",
+			"cosplorerReactorEmpty",
 			"cosplorerReactor",
 			"enikokoWall",
 			"schmeltoolWall",
