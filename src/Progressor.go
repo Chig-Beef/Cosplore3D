@@ -1,9 +1,5 @@
 package main
 
-import (
-	"slices"
-)
-
 type Progressor struct {
 	x         float64
 	y         float64
@@ -29,9 +25,14 @@ func (p *Progressor) check_collide(g *Game) {
 }
 
 func has_cosmium(g *Game) bool {
-	return slices.Contains(g.player.inventory, "Cosmium")
+	for i := 0; i < len(g.player.inventory); i++ {
+		if g.player.inventory[i].name == "Cosmium" {
+			return true
+		}
+	}
+	return false
 }
 
 func has_no_cosmium(g *Game) bool {
-	return !slices.Contains(g.player.inventory, "Cosmium")
+	return !has_cosmium(g)
 }

@@ -130,7 +130,6 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 						50,
 						50,
 						[]*ebiten.Image{g.images["ammo"]},
-						nil,
 						pickup_ammo,
 					})
 				case 31: // Cosmium
@@ -141,7 +140,6 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 						50,
 						50,
 						[]*ebiten.Image{g.images["cosmium"]},
-						g.images["cosmium"],
 						pickup_cosmium,
 					})
 				case 40: // Blob

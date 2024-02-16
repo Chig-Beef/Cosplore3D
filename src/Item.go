@@ -7,13 +7,12 @@ import (
 )
 
 type Item struct {
-	x        float64
-	y        float64
-	w        float64
-	h        float64
-	images   []*ebiten.Image
-	hudImage *ebiten.Image
-	action   Action
+	x      float64
+	y      float64
+	w      float64
+	h      float64
+	images []*ebiten.Image
+	action Action
 }
 
 func (i *Item) check_collide(p *Player) bool {
@@ -66,4 +65,20 @@ func (i *Item) draw(screen *ebiten.Image, c *Camera, tiles []Tile) {
 	op.GeoM.Scale(sW, sH)
 	op.GeoM.Translate(lineX-(sW*float64(ogW)/2.0), screenHeight/2-sH*float64(ogH)/2)
 	screen.DrawImage(i.images[0], op)
+}
+
+type InvItem struct {
+	name  string
+	image *ebiten.Image
+}
+
+func (ii *InvItem) draw(screen *ebiten.Image, x, y float64) {
+	ogW, ogH := ii.image.Size()
+
+	op := ebiten.DrawImageOptions{}
+
+	op.GeoM.Scale(50/float64(ogW), 50/float64(ogH))
+	op.GeoM.Translate(x, y)
+
+	screen.DrawImage(ii.image, &op)
 }

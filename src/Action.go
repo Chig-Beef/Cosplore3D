@@ -10,12 +10,12 @@ func pickup_ammo(g *Game) {
 }
 
 func pickup_cosmium(g *Game) {
-	g.player.inventory = append(g.player.inventory, "Cosmium")
+	g.player.inventory = append(g.player.inventory, InvItem{"Cosmium", g.images["cosmium"]})
 }
 
 func rid_cosmium(g *Game) {
 	for i := 0; i < len(g.player.inventory); i++ {
-		if g.player.inventory[i] == "Cosmium" {
+		if g.player.inventory[i].name == "Cosmium" {
 			g.player.inventory = append(g.player.inventory[:i], g.player.inventory[i+1:]...)
 			break
 		}

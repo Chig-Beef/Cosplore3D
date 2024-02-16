@@ -160,7 +160,7 @@ func main() {
 		3,
 		100,
 		weapon,
-		[]string{},
+		[]InvItem{},
 	}
 
 	g.levels = load_levels(g, tileSize)

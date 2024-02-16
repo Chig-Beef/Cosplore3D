@@ -21,7 +21,7 @@ type Player struct {
 	haste     float64
 	health    float64
 	weapon    Weapon
-	inventory []string
+	inventory []InvItem
 }
 
 func (p *Player) update(g *Game) {
@@ -132,4 +132,8 @@ func (p *Player) draw_hud(g *Game, screen *ebiten.Image) {
 	}
 
 	text.Draw(screen, strconv.Itoa(int(p.weapon.curMag))+"/"+strconv.Itoa(int(p.weapon.mag)), g.fonts["ammo"], screenWidth/2.0, screenHeight-10, color.RGBA{196, 32, 32, 255})
+
+	for i := 0; i < len(p.inventory); i++ {
+		p.inventory[i].draw(screen, float64(screenWidth/2+200+i*60), float64(screenHeight)/8.0*7+10)
+	}
 }
