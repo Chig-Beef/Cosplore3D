@@ -204,8 +204,6 @@ func (c *Camera) draw_world(level Level, screen *ebiten.Image) {
 		lineX := screenWidth - (a/c.fov*screenWidth + screenWidth/2.0)
 		y := float64(screenHeight)/2.0 - lineH/2.0
 
-		//ebitenutil.DrawLine(screen, lineX, float64(screenHeight)/2.0-lineH/2.0, lineX, float64(screenHeight)/2.0+lineH/2.0, get_color_with_distance(t.color, disT))
-
 		imgs := *t.imageCols
 
 		var subX int

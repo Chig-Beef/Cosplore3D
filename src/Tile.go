@@ -1,9 +1,6 @@
 package main
 
 import (
-	"image/color"
-	"math"
-
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -65,23 +62,4 @@ func line_interset(x1, y1, x2, y2, x3, y3, x4, y4 float64) bool {
 	}
 
 	return false
-}
-
-func get_color_with_distance(c color.Color, d float64) color.Color {
-	clr, ok := c.(color.RGBA)
-	if !ok {
-		return c
-	}
-
-	modifier := math.Sqrt(d / float64(tileSize))
-	if modifier < 1 {
-		modifier = 1
-	}
-
-	return color.RGBA{
-		uint8(float64(clr.R) / modifier),
-		uint8(float64(clr.G) / modifier),
-		uint8(float64(clr.B) / modifier),
-		uint8(clr.A),
-	}
 }
