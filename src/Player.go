@@ -79,6 +79,8 @@ func (p *Player) update(g *Game) {
 	}
 
 	p.check_collide(g, g.levels[p.curLevel])
+
+	p.weapon.update()
 }
 
 func (p *Player) check_collide(g *Game, l *Level) {

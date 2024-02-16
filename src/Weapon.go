@@ -7,15 +7,30 @@ import (
 )
 
 type Weapon struct {
-	damage     float64
-	rof        uint8   // Rate Of Fire - How many frames between shots
-	mag        uint8   // Magazine - How many bullets the weapon can hold
-	curMag     uint8   // How many bullets left
-	bulletSize float64 // How large of an area the weapon can hit
+	damage           float64
+	rof              uint8   // Rate Of Fire - How many frames between shots
+	mag              uint8   // Magazine - How many bullets the weapon can hold
+	curMag           uint8   // How many bullets left
+	bulletSize       float64 // How large of an area the weapon can hit
+	image            *ebiten.Image
+	fireImage        *ebiten.Image
+	animationCounter uint8
+}
+
+func (w *Weapon) update() {
+	if w.animationCounter > 0 {
+		w.animationCounter--
+	}
 }
 
 func (w *Weapon) draw(g *Game, screen *ebiten.Image) {
-	img := g.images["gun"]
+	var img *ebiten.Image
+	if w.animationCounter == 0 {
+		img = w.image
+	} else {
+		img = w.fireImage
+	}
+
 	ogW, ogH := img.Size()
 	sW := screenWidth / 6.0 / float64(ogW)
 	sH := screenHeight / 4.0 / float64(ogH)
@@ -33,6 +48,8 @@ func (w *Weapon) shoot(p *Player, enemies []*Enemy, tiles []Tile) {
 	var dx, dy, dis, angle float64
 
 	w.curMag--
+
+	w.animationCounter = 5
 
 	for i := 0; i < len(enemies); i++ {
 		e = enemies[i]

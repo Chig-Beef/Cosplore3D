@@ -27,6 +27,7 @@ func (g *Game) load_images() {
 	// HUD
 	load_image(g, "heart", "heart")
 	load_image(g, "gun", "gun")
+	load_image(g, "gunFire", "gunFire")
 
 	// Walls
 	load_image(g, "cosplorerWall", "cosplorerWall")

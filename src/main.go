@@ -148,6 +148,9 @@ func main() {
 		10,
 		10,
 		10,
+		g.images["gun"],
+		g.images["gunFire"],
+		0,
 	}
 
 	g.player = &Player{
