@@ -155,7 +155,7 @@ func main() {
 		tileSize * 3.5,
 		0,
 		&camera,
-		"schmeltool",
+		"ankaran",
 		10,
 		3,
 		100,

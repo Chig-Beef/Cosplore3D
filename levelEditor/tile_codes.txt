@@ -25,9 +25,9 @@ Markers
 19: 
 
 Progressors
-20: Has Cosmium
-21: Has No Cosmium
-22: 
+20: Has Cosmium (to The Cosplorer)
+21: Has No Cosmium (to Enikoko)
+22: Has Cosmium (to Schmeltool)
 23: 
 24: 
 25: 

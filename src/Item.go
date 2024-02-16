@@ -7,12 +7,13 @@ import (
 )
 
 type Item struct {
-	x      float64
-	y      float64
-	w      float64
-	h      float64
-	images []*ebiten.Image
-	action Action
+	x        float64
+	y        float64
+	w        float64
+	h        float64
+	images   []*ebiten.Image
+	hudImage *ebiten.Image
+	action   Action
 }
 
 func (i *Item) check_collide(p *Player) bool {

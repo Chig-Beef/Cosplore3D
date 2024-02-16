@@ -112,6 +112,16 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 						has_no_cosmium,
 						"enikoko",
 					})
+				case 22: // Progressor (Has Cosmium)
+					code = 0
+					progressors = append(progressors, Progressor{
+						tileSize * (float64(col)),
+						tileSize * (float64(row)),
+						tileSize,
+						tileSize,
+						has_cosmium,
+						"schmeltool",
+					})
 				case 30: // Ammo
 					code = 0
 					items = append(items, &Item{
@@ -120,6 +130,7 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 						50,
 						50,
 						[]*ebiten.Image{g.images["ammo"]},
+						nil,
 						pickup_ammo,
 					})
 				case 31: // Cosmium
@@ -130,6 +141,7 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 						50,
 						50,
 						[]*ebiten.Image{g.images["cosmium"]},
+						g.images["cosmium"],
 						pickup_cosmium,
 					})
 				case 40: // Blob
