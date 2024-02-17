@@ -16,11 +16,7 @@ type Item struct {
 }
 
 func (i *Item) check_collide(p *Player) bool {
-	dx := i.x - p.x
-	dy := i.y - p.y
-	dis := math.Sqrt(math.Pow(dx, 2) + math.Pow(dy, 2))
-
-	return dis < float64(tileSize)/2
+	return i.get_distance(p.x, p.y, true) < float64(tileSize)/2
 }
 
 func (i *Item) draw(screen *ebiten.Image, c *Camera, tiles []Tile) {
@@ -83,9 +79,9 @@ func (ii *InvItem) draw(screen *ebiten.Image, x, y float64) {
 	screen.DrawImage(ii.image, &op)
 }
 
-func (i *Item) get_distance(c *Camera, useSqrt bool) float64 {
-	dx := i.x - c.x
-	dy := i.y - c.y
+func (i *Item) get_distance(x, y float64, useSqrt bool) float64 {
+	dx := i.x - x
+	dy := i.y - y
 	if useSqrt { // If this ever gets slow, just use fastinvsqrt, and see if it approximates well enough
 		return math.Sqrt(math.Pow(dx, 2) + math.Pow(dy, 2))
 	} else { // Eliminates a SQRT call, improving performance

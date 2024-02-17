@@ -49,26 +49,14 @@ func (e *Enemy) update(g *Game, tiles []Tile) {
 		e.attack_target()
 	} else {
 		// If player close enough
-		var dx, dy, dis float64
-
-		dx = e.x - g.player.x
-		dy = e.y - g.player.y
-		dis = math.Sqrt(math.Pow(dx, 2) + math.Pow(dy, 2))
-
-		if dis < e.dov {
+		if e.get_distance(g.player.x, g.player.y, true) < e.dov {
 			e.target = g.player
 		}
 	}
 }
 
 func (e *Enemy) attack_target() {
-	var dx, dy, dis float64
-
-	dx = e.x - e.target.x
-	dy = e.y - e.target.y
-	dis = math.Sqrt(math.Pow(dx, 2) + math.Pow(dy, 2))
-
-	if dis < e.attackRange {
+	if e.get_distance(e.target.x, e.target.y, true) < e.attackRange {
 		e.attackCooldown--
 		if e.attackCooldown == 0 {
 			e.target.health -= e.damage
@@ -83,9 +71,9 @@ func (e *Enemy) attack_target() {
 	}
 }
 
-func (e *Enemy) get_distance(c *Camera, useSqrt bool) float64 {
-	dx := e.x - c.x
-	dy := e.y - c.y
+func (e *Enemy) get_distance(x, y float64, useSqrt bool) float64 {
+	dx := e.x - x
+	dy := e.y - y
 	if useSqrt { // If this ever gets slow, just use fastinvsqrt, and see if it approximates well enough
 		return math.Sqrt(math.Pow(dx, 2) + math.Pow(dy, 2))
 	} else { // Eliminates a SQRT call, improving performance

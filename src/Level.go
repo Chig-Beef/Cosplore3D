@@ -322,7 +322,7 @@ func (l *Level) draw_items_and_enemies(screen *ebiten.Image, c *Camera) {
 func (l *Level) sort_enemies_by_distance(c *Camera) {
 	for i := 0; i < len(l.enemies); i++ {
 		for j := 0; j < len(l.enemies)-i-1; j++ {
-			if l.enemies[j].get_distance(c, false) < l.enemies[j+1].get_distance(c, false) {
+			if l.enemies[j].get_distance(c.x, c.y, false) < l.enemies[j+1].get_distance(c.x, c.y, false) {
 				temp := l.enemies[j]
 				l.enemies[j] = l.enemies[j+1]
 				l.enemies[j+1] = temp
@@ -334,7 +334,7 @@ func (l *Level) sort_enemies_by_distance(c *Camera) {
 func (l *Level) sort_items_by_distance(c *Camera) {
 	for i := 0; i < len(l.items); i++ {
 		for j := 0; j < len(l.items)-i-1; j++ {
-			if l.items[j].get_distance(c, false) < l.items[j+1].get_distance(c, false) {
+			if l.items[j].get_distance(c.x, c.y, false) < l.items[j+1].get_distance(c.x, c.y, false) {
 				temp := l.items[j]
 				l.items[j] = l.items[j+1]
 				l.items[j+1] = temp
