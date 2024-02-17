@@ -1,13 +1,12 @@
 package main
 
 import (
+	"image/color"
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"golang.org/x/image/font"
-	"golang.org/x/image/font/opentype"
 )
 
 const (
@@ -25,6 +24,7 @@ type Game struct {
 	fonts                 map[string]font.Face
 	curMousePos           [2]int
 	prevMousePos          [2]int
+	menu                  Menu
 
 	// Audio
 	musicPlayer   *AudioPlayer
@@ -34,33 +34,7 @@ type Game struct {
 
 func (g *Game) Update() error {
 	//fmt.Println(ebiten.ActualTPS())
-	if !g.hasLoadedImageColumns {
-		create_image_columns(g, []string{
-			"cosplorerWall",
-			"ankaranWall",
-			"cosplorerComputer",
-			"cosplorerReactorEmpty",
-			"cosplorerReactor",
-			"enikokoWall",
-			"schmeltoolWall",
-		})
-		apply_image_columns_to_tiles(g, g.levels[g.player.curLevel])
-		return nil
-	}
-
-	select {
-	case p := <-g.musicPlayerCh:
-		g.musicPlayer = p
-	case err := <-g.errCh:
-		return err
-	default:
-	}
-
-	if g.musicPlayer != nil {
-		if err := g.musicPlayer.update(g); err != nil {
-			return err
-		}
-	}
+	g.update_audio()
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
 		if ebiten.CursorMode() == ebiten.CursorModeCaptured {
@@ -78,23 +52,27 @@ func (g *Game) Update() error {
 		g.curMousePos = [2]int{x, y}
 	}
 
-	for i := 0; i < len(g.levels[g.player.curLevel].enemies); i++ {
-		g.levels[g.player.curLevel].enemies[i].update(g, g.levels[g.player.curLevel].get_solid_tiles())
-	}
+	if g.player.curLevel == "menu" {
+		g.menu.update(g)
+	} else {
+		for i := 0; i < len(g.levels[g.player.curLevel].enemies); i++ {
+			g.levels[g.player.curLevel].enemies[i].update(g, g.levels[g.player.curLevel].get_solid_tiles())
+		}
 
-	g.player.update(g)
-	g.kull_enemies()
-	g.levels[g.player.curLevel].update_progressors_and_triggers(g)
+		g.player.update(g)
+		g.kull_enemies()
+		g.levels[g.player.curLevel].update_progressors_and_triggers(g)
+	}
 
 	g.prevMousePos = g.curMousePos
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	if !g.hasLoadedImageColumns {
+	if g.player.curLevel == "menu" {
+		g.menu.draw(screen, g)
 		return
 	}
-
 	g.levels[g.player.curLevel].draw_floor_sky(screen)
 	g.player.draw(g, screen)
 	g.levels[g.player.curLevel].draw_items_and_enemies(screen, g.player.camera)
@@ -105,28 +83,8 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return screenWidth, screenHeight
 }
 
-func (g *Game) load_fonts() {
-	g.fonts = make(map[string]font.Face)
-
-	tt, err := opentype.Parse(fonts.MPlus1pRegular_ttf)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	const dpi = 72
-	mplusNormalFont, err := opentype.NewFace(tt, &opentype.FaceOptions{
-		Size:    screenHeight/8 - 20,
-		DPI:     dpi,
-		Hinting: font.HintingVertical,
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
-	g.fonts["ammo"] = mplusNormalFont
-}
-
 func main() {
-	ebiten.SetCursorMode(ebiten.CursorModeCaptured)
+	//ebiten.SetCursorMode(ebiten.CursorModeCaptured)
 	g := &Game{}
 
 	g.imageColumns = make(map[string]*[]*ebiten.Image)
@@ -159,7 +117,7 @@ func main() {
 		tileSize * 3.5,
 		0,
 		&camera,
-		"ankaran",
+		"menu",
 		10,
 		3,
 		100,
@@ -169,10 +127,13 @@ func main() {
 
 	g.levels = load_levels(g, tileSize)
 
-	g.player.x = g.levels[g.player.curLevel].playerStartPos[0]
-	g.player.y = g.levels[g.player.curLevel].playerStartPos[1]
-
 	g.init_audio()
+
+	g.menu = Menu{
+		[]*Button{
+			{float64(screenWidth/2 - 150), 200, 300, 100, color.RGBA{32, 32, 32, 255}, color.White, "Play", start_game},
+		},
+	}
 
 	ebiten.SetWindowSize(screenWidth, screenHeight)
 	ebiten.SetWindowTitle("Cosplore3D")

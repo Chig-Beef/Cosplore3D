@@ -346,10 +346,25 @@ func (l *Level) sort_items_by_distance(c *Camera) {
 func (g *Game) open_level(levelName string) {
 	g.player.curLevel = levelName
 
+	if !g.hasLoadedImageColumns {
+		create_image_columns(g, []string{
+			"cosplorerWall",
+			"ankaranWall",
+			"cosplorerComputer",
+			"cosplorerReactorEmpty",
+			"cosplorerReactor",
+			"enikokoWall",
+			"schmeltoolWall",
+		})
+		apply_image_columns_to_tiles(g, g.levels[g.player.curLevel])
+	}
+
 	if !g.levels[levelName].fullyLoaded {
 		apply_image_columns_to_tiles(g, g.levels[levelName])
 	}
 
 	g.player.x = g.levels[levelName].playerStartPos[0]
 	g.player.y = g.levels[levelName].playerStartPos[1]
+
+	ebiten.SetCursorMode(ebiten.CursorModeCaptured)
 }

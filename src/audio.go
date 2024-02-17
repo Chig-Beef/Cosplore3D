@@ -25,6 +25,24 @@ type musicType int
 
 const sampleRate int = 48_000
 
+func (g *Game) update_audio() error {
+	select {
+	case p := <-g.musicPlayerCh:
+		g.musicPlayer = p
+	case err := <-g.errCh:
+		return err
+	default:
+	}
+
+	if g.musicPlayer != nil {
+		if err := g.musicPlayer.update(g); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func NewPlayer(g *Game, audioContext *audio.Context, musicType musicType) (*AudioPlayer, error) {
 	type audioStream interface {
 		io.ReadSeeker
