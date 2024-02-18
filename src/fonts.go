@@ -38,7 +38,7 @@ func (g *Game) load_fonts() {
 	g.fonts["title"] = mplusNormalFont
 
 	mplusNormalFont, err = opentype.NewFace(tt, &opentype.FaceOptions{
-		Size:    screenHeight / 8,
+		Size:    screenHeight / 12,
 		DPI:     dpi,
 		Hinting: font.HintingVertical,
 	})

@@ -25,12 +25,12 @@ type Button struct {
 type clickAction func(*Game, *Menu)
 
 func (b *Button) check_click(x, y float64) bool {
-	return b.x <= x && x <= b.x+b.h && b.y <= y && y <= b.y+b.h
+	return b.x <= x && x <= b.x+b.w && b.y <= y && y <= b.y+b.h
 }
 
 func (b *Button) draw(screen *ebiten.Image, g *Game) {
 	ebitenutil.DrawRect(screen, b.x, b.y, b.w, b.h, b.bgColor)
-	text.Draw(screen, b.text, g.fonts["btnText"], int(b.x+10), int(b.y+b.h/2), b.textColor)
+	text.Draw(screen, b.text, g.fonts["btnText"], int(b.x+10), int(b.y+b.h/2+18), b.textColor)
 }
 
 func start_game(g *Game, m *Menu) {

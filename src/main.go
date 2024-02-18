@@ -131,7 +131,8 @@ func main() {
 
 	g.menu = Menu{
 		[]*Button{
-			{float64(screenWidth/2 - 150), 200, 300, 100, color.RGBA{32, 32, 32, 255}, color.White, "Play", start_game},
+			{0, screenWidth / 15 * 2, screenWidth / 5, screenHeight / 14, color.RGBA{32, 32, 32, 255}, color.White, "Play", start_game},
+			{0, screenWidth / 15 * 3, screenWidth / 5, screenHeight / 14, color.RGBA{32, 32, 32, 255}, color.White, "Settings", start_game},
 		},
 	}
 

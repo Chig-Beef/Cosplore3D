@@ -41,6 +41,9 @@ func (g *Game) load_images() {
 	// Items
 	load_image(g, "cosmium", "cosmium")
 	load_image(g, "ammo", "ammo")
+
+	// Other
+	load_image(g, "planet", "planet")
 }
 
 func load_image(g *Game, fName string, mName string) {

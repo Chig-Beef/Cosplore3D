@@ -54,7 +54,7 @@ func (tb *TextBox) check_click(g *Game) bool {
 	y := g.curMousePos[1]
 
 	if int(tb.x) <= x && x <= int(tb.x+tb.w) {
-		if int(tb.y) <= y && y <= int(tb.y+tb.y) {
+		if int(tb.y) <= y && y <= int(tb.y+tb.h) {
 			if tb.active {
 				tb.correct()
 			}
