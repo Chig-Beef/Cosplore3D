@@ -25,6 +25,47 @@ type musicType int
 
 const sampleRate int = 48_000
 
+type audioStream interface {
+	io.ReadSeeker
+	Length() int64
+}
+
+func (g *Game) load_audio() error {
+	g.audio = make(map[string]*AudioPlayer)
+
+	if err := g.load_track("Ankaran", "ankaran"); err != nil {
+		return err
+	}
+	if err := g.load_track("Enikoko", "enikoko"); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (g *Game) load_track(fName, mName string) error {
+	var s audioStream
+
+	audio, err := os.ReadFile("assets/audio/" + fName + ".ogg")
+	if err != nil {
+		return err
+	}
+
+	s, err = vorbis.DecodeWithoutResampling(bytes.NewReader(audio))
+	if err != nil {
+		log.Fatal("failed to load audio")
+	}
+
+	ap, err := NewPlayer(g, 0, s)
+	if err != nil {
+		return err
+	}
+
+	g.audio[mName] = ap
+
+	return nil
+}
+
 func (g *Game) update_audio() error {
 	select {
 	case p := <-g.musicPlayerCh:
@@ -43,36 +84,19 @@ func (g *Game) update_audio() error {
 	return nil
 }
 
-func NewPlayer(g *Game, audioContext *audio.Context, musicType musicType) (*AudioPlayer, error) {
-	type audioStream interface {
-		io.ReadSeeker
-		Length() int64
-	}
-
+func NewPlayer(g *Game, musicType musicType, stream audioStream) (*AudioPlayer, error) {
 	const bytesPerSample = 4
 
-	var s audioStream
-
-	ankaranAudio, err := os.ReadFile("assets/audio/Ankaran.ogg")
-	if err != nil {
-		return nil, err
-	}
-
-	s, err = vorbis.DecodeWithoutResampling(bytes.NewReader(ankaranAudio))
-	if err != nil {
-		log.Fatal("failed to load audio")
-	}
-
-	p, err := audioContext.NewPlayer(s)
+	p, err := g.ctx.NewPlayer(stream)
 	if err != nil {
 		return nil, err
 	}
 
 	player := &AudioPlayer{
 		game:         g,
-		audioContext: audioContext,
+		audioContext: g.ctx,
 		audioPlayer:  p,
-		total:        time.Second * time.Duration(s.Length()) / bytesPerSample / time.Duration(sampleRate),
+		total:        time.Second * time.Duration(stream.Length()) / bytesPerSample / time.Duration(sampleRate),
 		volume128:    128,
 		musicType:    musicType,
 	}
@@ -80,7 +104,6 @@ func NewPlayer(g *Game, audioContext *audio.Context, musicType musicType) (*Audi
 		player.total = 1
 	}
 
-	player.audioPlayer.Play()
 	return player, nil
 }
 
@@ -93,28 +116,42 @@ func (ap *AudioPlayer) update(g *Game) error {
 	if ap.audioPlayer.IsPlaying() {
 		ap.current = ap.audioPlayer.Position()
 	} else {
-		ap.playBackground(g)
+		err := ap.audioPlayer.Rewind()
+		if err != nil {
+			return err
+		}
+		ap.audioPlayer.Play()
 	}
 	return nil
 }
 
-func (ap *AudioPlayer) playBackground(g *Game) {
-	m, err := NewPlayer(g, g.musicPlayer.audioContext, 0)
-	if err != nil {
-		log.Fatal("error with sound")
+func (g *Game) play_audio(key string) {
+	m, ok := g.audio[g.curAudio]
+	if ok {
+		if m.audioPlayer.IsPlaying() {
+			m.audioPlayer.Pause()
+		}
 	}
 
+	m = g.audio[key]
+
+	g.curAudio = key
 	g.musicPlayer = m
+
+	err := g.musicPlayer.audioPlayer.Rewind()
+	if err != nil {
+		log.Fatal(err)
+	}
+	g.musicPlayer.audioPlayer.Play()
 }
 
 func (g *Game) init_audio() {
 	audioContext := audio.NewContext(sampleRate)
-	m, err := NewPlayer(g, audioContext, 0)
-	if err != nil {
-		log.Fatal("error with sound")
-	}
-	g.musicPlayer = m
 
 	g.musicPlayerCh = make(chan *AudioPlayer)
 	g.errCh = make(chan error)
+
+	g.ctx = audioContext
+
+	g.load_audio()
 }

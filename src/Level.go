@@ -22,6 +22,7 @@ type Level struct {
 	playerStartPos [2]float64
 	progressors    []Progressor
 	triggers       []Trigger
+	audio          string
 	fullyLoaded    bool
 }
 
@@ -69,8 +70,9 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 		rawRows := strings.Split(string(rawLevel), "\r\n")
 
 		floorColor, skyColor := get_fs_color(rawRows[0])
+		audio := rawRows[1]
 
-		rawRows = rawRows[1:]
+		rawRows = rawRows[2:]
 
 		tiles := [][]Tile{}
 		enemies := []*Enemy{}
@@ -228,7 +230,7 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 			}
 		}
 
-		levels[lName] = &Level{lName, tiles, enemies, items, floorColor, skyColor, [2]float64{px, py}, progressors, triggers, false}
+		levels[lName] = &Level{lName, tiles, enemies, items, floorColor, skyColor, [2]float64{px, py}, progressors, triggers, audio, false}
 	}
 
 	return levels
@@ -367,4 +369,6 @@ func (g *Game) open_level(levelName string) {
 	g.player.y = g.levels[levelName].playerStartPos[1]
 
 	ebiten.SetCursorMode(ebiten.CursorModeCaptured)
+
+	g.play_audio(g.levels[levelName].audio)
 }

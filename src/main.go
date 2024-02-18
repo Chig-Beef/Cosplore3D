@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/audio"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"golang.org/x/image/font"
 )
@@ -27,9 +28,12 @@ type Game struct {
 	menu                  Menu
 
 	// Audio
+	ctx           *audio.Context
 	musicPlayer   *AudioPlayer
 	musicPlayerCh chan *AudioPlayer
 	errCh         chan error
+	audio         map[string]*AudioPlayer
+	curAudio      string
 }
 
 func (g *Game) Update() error {
