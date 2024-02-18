@@ -349,7 +349,7 @@ func (g *Game) open_level(levelName string) {
 	g.player.curLevel = levelName
 
 	if !g.hasLoadedImageColumns {
-		create_image_columns(g, []string{
+		g.create_image_columns([]string{
 			"cosplorerWall",
 			"ankaranWall",
 			"cosplorerComputer",
@@ -358,11 +358,11 @@ func (g *Game) open_level(levelName string) {
 			"enikokoWall",
 			"schmeltoolWall",
 		})
-		apply_image_columns_to_tiles(g, g.levels[g.player.curLevel])
+		g.apply_image_columns_to_tiles(g.levels[g.player.curLevel])
 	}
 
 	if !g.levels[levelName].fullyLoaded {
-		apply_image_columns_to_tiles(g, g.levels[levelName])
+		g.apply_image_columns_to_tiles(g.levels[levelName])
 	}
 
 	g.player.x = g.levels[levelName].playerStartPos[0]

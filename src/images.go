@@ -11,42 +11,42 @@ func (g *Game) load_images() {
 	g.images = make(map[string]*ebiten.Image)
 
 	// Enemies
-	load_image(g, "blob1", "blobFront")
-	load_image(g, "blob2", "blobRight")
-	load_image(g, "blob3", "blobBack")
-	load_image(g, "blob4", "blobLeft")
-	load_image(g, "crewmate1", "crewmateFront")
-	load_image(g, "crewmate2", "crewmateRight")
-	load_image(g, "crewmate3", "crewmateBack")
-	load_image(g, "crewmate4", "crewmateLeft")
-	load_image(g, "crawler1", "crawlerFront")
-	load_image(g, "crawler2", "crawlerRight")
-	load_image(g, "crawler3", "crawlerBack")
-	load_image(g, "crawler4", "crawlerLeft")
+	g.load_image("blob1", "blobFront")
+	g.load_image("blob2", "blobRight")
+	g.load_image("blob3", "blobBack")
+	g.load_image("blob4", "blobLeft")
+	g.load_image("crewmate1", "crewmateFront")
+	g.load_image("crewmate2", "crewmateRight")
+	g.load_image("crewmate3", "crewmateBack")
+	g.load_image("crewmate4", "crewmateLeft")
+	g.load_image("crawler1", "crawlerFront")
+	g.load_image("crawler2", "crawlerRight")
+	g.load_image("crawler3", "crawlerBack")
+	g.load_image("crawler4", "crawlerLeft")
 
 	// HUD
-	load_image(g, "heart", "heart")
-	load_image(g, "gun", "gun")
-	load_image(g, "gunFire", "gunFire")
+	g.load_image("heart", "heart")
+	g.load_image("gun", "gun")
+	g.load_image("gunFire", "gunFire")
 
 	// Walls
-	load_image(g, "cosplorerWall", "cosplorerWall")
-	load_image(g, "ankaranWall", "ankaranWall")
-	load_image(g, "cosplorerComputer", "cosplorerComputer")
-	load_image(g, "cosplorerReactor", "cosplorerReactor")
-	load_image(g, "cosplorerReactorEmpty", "cosplorerReactorEmpty")
-	load_image(g, "enikokoWall", "enikokoWall")
-	load_image(g, "schmeltoolWall", "schmeltoolWall")
+	g.load_image("cosplorerWall", "cosplorerWall")
+	g.load_image("ankaranWall", "ankaranWall")
+	g.load_image("cosplorerComputer", "cosplorerComputer")
+	g.load_image("cosplorerReactor", "cosplorerReactor")
+	g.load_image("cosplorerReactorEmpty", "cosplorerReactorEmpty")
+	g.load_image("enikokoWall", "enikokoWall")
+	g.load_image("schmeltoolWall", "schmeltoolWall")
 
 	// Items
-	load_image(g, "cosmium", "cosmium")
-	load_image(g, "ammo", "ammo")
+	g.load_image("cosmium", "cosmium")
+	g.load_image("ammo", "ammo")
 
 	// Other
-	load_image(g, "planet", "planet")
+	g.load_image("planet", "planet")
 }
 
-func load_image(g *Game, fName string, mName string) {
+func (g *Game) load_image(fName string, mName string) {
 	img, _, err := ebitenutil.NewImageFromFile("assets/images/" + fName + ".png")
 	if err != nil {
 		log.Fatal(err)
@@ -54,7 +54,7 @@ func load_image(g *Game, fName string, mName string) {
 	g.images[mName] = img
 }
 
-func create_image_columns(g *Game, keys []string) {
+func (g *Game) create_image_columns(keys []string) {
 	g.imageColumns[""] = &[]*ebiten.Image{}
 
 	for _, key := range keys {
@@ -78,7 +78,7 @@ func create_image_columns(g *Game, keys []string) {
 	g.hasLoadedImageColumns = true
 }
 
-func apply_image_columns_to_tiles(g *Game, l *Level) {
+func (g *Game) apply_image_columns_to_tiles(l *Level) {
 	for row := 0; row < len(l.data); row++ {
 		for col := 0; col < len(l.data[row]); col++ {
 			l.data[row][col].imageCols = g.imageColumns[get_tile_image(l.data[row][col].code)]
