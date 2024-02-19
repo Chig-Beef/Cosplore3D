@@ -62,9 +62,13 @@ func (g *Game) Update() error {
 		for i := 0; i < len(g.levels[g.player.curLevel].enemies); i++ {
 			g.levels[g.player.curLevel].enemies[i].update(g, g.levels[g.player.curLevel].get_solid_tiles())
 		}
+		for i := 0; i < len(g.levels[g.player.curLevel].bosses); i++ {
+			g.levels[g.player.curLevel].bosses[i].update(g, g.levels[g.player.curLevel].get_solid_tiles())
+		}
 
 		g.player.update(g)
 		g.kull_enemies()
+		g.kull_bosses()
 		g.levels[g.player.curLevel].update_progressors_and_triggers(g)
 	}
 
@@ -79,7 +83,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	}
 	g.levels[g.player.curLevel].draw_floor_sky(screen)
 	g.player.draw(g, screen)
-	g.levels[g.player.curLevel].draw_items_and_enemies(screen, g.player.camera)
+	g.levels[g.player.curLevel].draw_items_enemies_and_bosses(screen, g.player.camera)
 	g.player.draw_hud(g, screen)
 }
 

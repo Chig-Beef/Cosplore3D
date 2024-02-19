@@ -43,8 +43,9 @@ func (w *Weapon) draw(g *Game, screen *ebiten.Image) {
 	screen.DrawImage(img, &op)
 }
 
-func (w *Weapon) shoot(p *Player, enemies []*Enemy, tiles []Tile) {
+func (w *Weapon) shoot(p *Player, enemies []*Enemy, bosses []*Boss, tiles []Tile) {
 	var e *Enemy
+	var b *Boss
 	var dx, dy, dis, angle float64
 
 	w.curMag--
@@ -81,6 +82,40 @@ func (w *Weapon) shoot(p *Player, enemies []*Enemy, tiles []Tile) {
 
 		if angle < w.bulletSize || angle > 360-w.bulletSize {
 			e.health -= w.damage
+			return
+		}
+	}
+
+	for i := 0; i < len(bosses); i++ {
+		b = bosses[i]
+
+		// Check if behind a wall
+		visible := true
+		for j := 0; j < len(tiles); j++ {
+			if tiles[j].check_line_in_tile(p.x, p.y, b.x, b.y) {
+				visible = false
+				break
+			}
+		}
+		if !visible {
+			continue
+		}
+
+		dx = b.x - p.x
+		dy = b.y - p.y
+		dis = math.Sqrt(math.Pow(dx, 2) + math.Pow(dy, 2))
+		angle = to_degrees(math.Acos(dx / dis))
+
+		if math.Asin(dy/dis) < 0 {
+			angle = -angle
+		}
+
+		// How much to the left or right of the player the enemy is
+		angle -= p.angle
+		angle = bound_angle(angle)
+
+		if angle < w.bulletSize || angle > 360-w.bulletSize {
+			b.health -= w.damage
 			return
 		}
 	}

@@ -16,6 +16,7 @@ type Level struct {
 	name           string
 	data           [][]Tile
 	enemies        []*Enemy
+	bosses         []*Boss
 	items          []*Item
 	floorColor     color.RGBA
 	skyColor       color.RGBA
@@ -76,6 +77,7 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 
 		tiles := [][]Tile{}
 		enemies := []*Enemy{}
+		bosses := []*Boss{}
 		items := []*Item{}
 		progressors := []Progressor{}
 		triggers := []Trigger{}
@@ -207,6 +209,27 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 						10,
 					),
 					)
+				case 43: // Enikoko Beast
+					code = 0
+					bosses = append(bosses, create_new_boss(
+						col,
+						row,
+						200,
+						280,
+						[]*ebiten.Image{
+							g.images["beastFront"],
+							g.images["beastLeft"],
+							g.images["beastBack"],
+							g.images["beastRight"],
+						},
+						500,
+						5,
+						3,
+						24,
+						5,
+						10,
+					),
+					)
 				case 50: // Trigger (rid Cosmium)
 					code = 0
 					triggers = append(triggers, Trigger{
@@ -230,7 +253,7 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 			}
 		}
 
-		levels[lName] = &Level{lName, tiles, enemies, items, floorColor, skyColor, [2]float64{px, py}, progressors, triggers, audio, false}
+		levels[lName] = &Level{lName, tiles, enemies, bosses, items, floorColor, skyColor, [2]float64{px, py}, progressors, triggers, audio, false}
 	}
 
 	return levels
@@ -309,8 +332,9 @@ func get_fs_color(data string) (color.RGBA, color.RGBA) {
 	return floorColor, skyColor
 }
 
-func (l *Level) draw_items_and_enemies(screen *ebiten.Image, c *Camera) {
+func (l *Level) draw_items_enemies_and_bosses(screen *ebiten.Image, c *Camera) {
 	tiles := l.get_solid_tiles()
+	l.sort_bosses_by_distance(c)
 	l.sort_enemies_by_distance(c)
 	l.sort_items_by_distance(c)
 	for i := 0; i < len(l.enemies); i++ {
@@ -318,6 +342,9 @@ func (l *Level) draw_items_and_enemies(screen *ebiten.Image, c *Camera) {
 	}
 	for i := 0; i < len(l.items); i++ {
 		l.items[i].draw(screen, c, tiles)
+	}
+	for i := 0; i < len(l.bosses); i++ {
+		l.bosses[i].draw(screen, c, tiles)
 	}
 }
 
@@ -328,6 +355,18 @@ func (l *Level) sort_enemies_by_distance(c *Camera) {
 				temp := l.enemies[j]
 				l.enemies[j] = l.enemies[j+1]
 				l.enemies[j+1] = temp
+			}
+		}
+	}
+}
+
+func (l *Level) sort_bosses_by_distance(c *Camera) {
+	for i := 0; i < len(l.bosses); i++ {
+		for j := 0; j < len(l.bosses)-i-1; j++ {
+			if l.bosses[j].get_distance(c.x, c.y, false) < l.bosses[j+1].get_distance(c.x, c.y, false) {
+				temp := l.bosses[j]
+				l.bosses[j] = l.bosses[j+1]
+				l.bosses[j+1] = temp
 			}
 		}
 	}

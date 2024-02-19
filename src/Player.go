@@ -75,7 +75,7 @@ func (p *Player) update(g *Game) {
 	p.camera.update_props(p)
 
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0) && p.weapon.curMag > 0 {
-		p.weapon.shoot(p, g.levels[p.curLevel].enemies, g.levels[p.curLevel].get_solid_tiles())
+		p.weapon.shoot(p, g.levels[p.curLevel].enemies, g.levels[p.curLevel].bosses, g.levels[p.curLevel].get_solid_tiles())
 	}
 
 	p.check_collide(g, g.levels[p.curLevel])
