@@ -22,9 +22,15 @@ type Boss struct {
 	dov            float64
 	attackRange    float64
 	attackCooldown uint8
+	power          Power
+	rop            uint8
+	powerCooldown  uint8
+	visible        bool
 }
 
-func create_new_boss(col, row int, w, h float64, images []*ebiten.Image, health, speed, damage float64, roa uint8, dov, attackRange float64) *Boss {
+type Power func(*Game, *Boss)
+
+func create_new_boss(col, row int, w, h float64, images []*ebiten.Image, health, speed, damage float64, roa uint8, dov, attackRange float64, power Power, rop uint8) *Boss {
 	return &Boss{
 		tileSize * (float64(col) + 0.5),
 		tileSize * (float64(row) + 0.5),
@@ -40,6 +46,10 @@ func create_new_boss(col, row int, w, h float64, images []*ebiten.Image, health,
 		dov * tileSize,
 		attackRange,
 		roa,
+		power,
+		rop,
+		rop,
+		true,
 	}
 }
 
@@ -47,6 +57,13 @@ func (b *Boss) update(g *Game, tiles []Tile) {
 	if b.target != nil {
 		b.follow_target(tiles)
 		b.attack_target()
+		b.powerCooldown--
+		if b.powerCooldown <= 0 {
+			b.powerCooldown = b.rop
+			if b.power != nil {
+				b.power(g, b)
+			}
+		}
 	} else {
 		// If player close enough
 		if b.get_distance(g.player.x, g.player.y, true) < b.dov {
@@ -121,6 +138,10 @@ func (b *Boss) follow_target(tiles []Tile) {
 }
 
 func (b *Boss) draw(screen *ebiten.Image, c *Camera, tiles []Tile) {
+	if !b.visible {
+		return
+	}
+
 	for i := 0; i < len(tiles); i++ {
 		if tiles[i].check_line_in_tile(b.x, b.y, c.x, c.y) {
 			// Can't see through a wall
@@ -194,4 +215,8 @@ func (g *Game) kull_bosses() {
 		newBosses[i] = g.levels[g.player.curLevel].bosses[aliveBosses[i]]
 	}
 	g.levels[g.player.curLevel].bosses = newBosses
+}
+
+func change_visibility(g *Game, b *Boss) {
+	b.visible = !b.visible
 }

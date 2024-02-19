@@ -228,6 +228,8 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 						24,
 						5,
 						10,
+						change_visibility,
+						60,
 					),
 					)
 				case 50: // Trigger (rid Cosmium)
