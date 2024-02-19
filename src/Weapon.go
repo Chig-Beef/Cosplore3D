@@ -52,7 +52,7 @@ func (w *Weapon) shoot(p *Player, enemies []*Enemy, bosses []*Boss, tiles []Tile
 
 	w.animationCounter = 5
 
-	for i := 0; i < len(enemies); i++ {
+	for i := len(enemies) - 1; i >= 0; i-- {
 		e = enemies[i]
 
 		// Check if behind a wall
@@ -86,7 +86,7 @@ func (w *Weapon) shoot(p *Player, enemies []*Enemy, bosses []*Boss, tiles []Tile
 		}
 	}
 
-	for i := 0; i < len(bosses); i++ {
+	for i := len(bosses) - 1; i >= 0; i-- {
 		b = bosses[i]
 
 		// Check if behind a wall
