@@ -220,3 +220,25 @@ func (g *Game) kull_bosses() {
 func change_visibility(g *Game, b *Boss) {
 	b.visible = !b.visible
 }
+
+func spawn_crawler(g *Game, b *Boss) {
+	g.levels[g.player.curLevel].enemies = append(g.levels[g.player.curLevel].enemies, create_new_enemy(
+		int(b.x/tileSize),
+		int(b.y/tileSize),
+		100,
+		70,
+		[]*ebiten.Image{
+			g.images["crawlerFront"],
+			g.images["crawlerLeft"],
+			g.images["crawlerBack"],
+			g.images["crawlerRight"],
+		},
+		100,
+		4,
+		4,
+		18,
+		7,
+		8,
+	),
+	)
+}

@@ -52,40 +52,6 @@ func (w *Weapon) shoot(p *Player, enemies []*Enemy, bosses []*Boss, tiles []Tile
 
 	w.animationCounter = 5
 
-	for i := len(enemies) - 1; i >= 0; i-- {
-		e = enemies[i]
-
-		// Check if behind a wall
-		visible := true
-		for j := 0; j < len(tiles); j++ {
-			if tiles[j].check_line_in_tile(p.x, p.y, e.x, e.y) {
-				visible = false
-				break
-			}
-		}
-		if !visible {
-			continue
-		}
-
-		dx = e.x - p.x
-		dy = e.y - p.y
-		dis = math.Sqrt(math.Pow(dx, 2) + math.Pow(dy, 2))
-		angle = to_degrees(math.Acos(dx / dis))
-
-		if math.Asin(dy/dis) < 0 {
-			angle = -angle
-		}
-
-		// How much to the left or right of the player the enemy is
-		angle -= p.angle
-		angle = bound_angle(angle)
-
-		if angle < w.bulletSize || angle > 360-w.bulletSize {
-			e.health -= w.damage
-			return
-		}
-	}
-
 	for i := len(bosses) - 1; i >= 0; i-- {
 		b = bosses[i]
 
@@ -116,6 +82,40 @@ func (w *Weapon) shoot(p *Player, enemies []*Enemy, bosses []*Boss, tiles []Tile
 
 		if angle < w.bulletSize || angle > 360-w.bulletSize {
 			b.health -= w.damage
+			return
+		}
+	}
+
+	for i := len(enemies) - 1; i >= 0; i-- {
+		e = enemies[i]
+
+		// Check if behind a wall
+		visible := true
+		for j := 0; j < len(tiles); j++ {
+			if tiles[j].check_line_in_tile(p.x, p.y, e.x, e.y) {
+				visible = false
+				break
+			}
+		}
+		if !visible {
+			continue
+		}
+
+		dx = e.x - p.x
+		dy = e.y - p.y
+		dis = math.Sqrt(math.Pow(dx, 2) + math.Pow(dy, 2))
+		angle = to_degrees(math.Acos(dx / dis))
+
+		if math.Asin(dy/dis) < 0 {
+			angle = -angle
+		}
+
+		// How much to the left or right of the player the enemy is
+		angle -= p.angle
+		angle = bound_angle(angle)
+
+		if angle < w.bulletSize || angle > 360-w.bulletSize {
+			e.health -= w.damage
 			return
 		}
 	}

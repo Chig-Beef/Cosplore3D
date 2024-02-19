@@ -53,7 +53,7 @@ Enemies
 41: Infected Crewmate
 42: Trash Crawler
 43: Enikoko Beast
-44: 
+44: Crawler Champion
 45: 
 46: 
 47: 

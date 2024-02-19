@@ -27,6 +27,10 @@ func (g *Game) load_images() {
 	g.load_image("beast2", "beastRight")
 	g.load_image("beast3", "beastBack")
 	g.load_image("beast4", "beastLeft")
+	g.load_image("champion1", "championFront")
+	g.load_image("champion2", "championRight")
+	g.load_image("champion3", "championBack")
+	g.load_image("champion4", "championLeft")
 
 	// HUD
 	g.load_image("heart", "heart")

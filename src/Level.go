@@ -185,7 +185,7 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 						1.5,
 						30,
 						5,
-						10,
+						20,
 					),
 					)
 				case 42: // Trash Crawler
@@ -202,11 +202,11 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 							g.images["crawlerRight"],
 						},
 						100,
-						3,
-						1,
-						24,
-						5,
-						10,
+						4,
+						4,
+						18,
+						7,
+						8,
 					),
 					)
 				case 43: // Enikoko Beast
@@ -230,6 +230,29 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 						10,
 						change_visibility,
 						60,
+					),
+					)
+				case 44: // Crawler Champion
+					code = 0
+					bosses = append(bosses, create_new_boss(
+						col,
+						row,
+						250,
+						200,
+						[]*ebiten.Image{
+							g.images["championFront"],
+							g.images["championLeft"],
+							g.images["championBack"],
+							g.images["championRight"],
+						},
+						500,
+						7,
+						5,
+						24,
+						5,
+						10,
+						spawn_crawler,
+						255,
 					),
 					)
 				case 50: // Trigger (rid Cosmium)
