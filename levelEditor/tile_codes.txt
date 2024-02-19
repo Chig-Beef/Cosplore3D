@@ -52,7 +52,7 @@ Enemies
 40: Blob
 41: Infected Crewmate
 42: Trash Crawler
-43: 
+43: Enikoko Beast
 44: 
 45: 
 46: 
