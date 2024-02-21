@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"slices"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2/audio"
@@ -32,6 +33,8 @@ type audioStream interface {
 
 func (g *Game) load_audio() error {
 	g.audio = make(map[string]*AudioPlayer)
+	g.soundEffects = make(map[string]*AudioPlayer)
+	g.musicPlayer = make(map[string]*AudioPlayer)
 
 	if err := g.load_track("Ankaran", "ankaran"); err != nil {
 		return err
@@ -39,22 +42,22 @@ func (g *Game) load_audio() error {
 	if err := g.load_track("Enikoko", "enikoko"); err != nil {
 		return err
 	}
-	if err := g.load_track("enemyDeath", "enemyDeath"); err != nil {
+	if err := g.load_effect("enemyDeath", "enemyDeath"); err != nil {
 		return err
 	}
-	if err := g.load_track("enemyHurt", "enemyHurt"); err != nil {
+	if err := g.load_effect("enemyHurt", "enemyHurt"); err != nil {
 		return err
 	}
-	if err := g.load_track("pickup", "pickup"); err != nil {
+	if err := g.load_effect("pickup", "pickup"); err != nil {
 		return err
 	}
-	if err := g.load_track("playerHurt", "playerHurt"); err != nil {
+	if err := g.load_effect("playerHurt", "playerHurt"); err != nil {
 		return err
 	}
-	if err := g.load_track("shoot", "shoot"); err != nil {
+	if err := g.load_effect("shoot", "shoot"); err != nil {
 		return err
 	}
-	if err := g.load_track("trigger", "trigger"); err != nil {
+	if err := g.load_effect("trigger", "trigger"); err != nil {
 		return err
 	}
 
@@ -84,18 +87,61 @@ func (g *Game) load_track(fName, mName string) error {
 	return nil
 }
 
-func (g *Game) update_audio() error {
-	select {
-	case p := <-g.musicPlayerCh:
-		g.musicPlayer = p
-	case err := <-g.errCh:
+func (g *Game) load_effect(fName, mName string) error {
+	var s audioStream
+
+	audio, err := os.ReadFile("assets/audio/" + fName + ".ogg")
+	if err != nil {
 		return err
-	default:
 	}
 
-	if g.musicPlayer != nil {
-		if err := g.musicPlayer.update(g); err != nil {
+	s, err = vorbis.DecodeWithoutResampling(bytes.NewReader(audio))
+	if err != nil {
+		log.Fatal("failed to load audio")
+	}
+
+	ap, err := NewPlayer(g, 0, s)
+	if err != nil {
+		return err
+	}
+
+	g.soundEffects[mName] = ap
+
+	return nil
+}
+
+func (g *Game) update_audio() error {
+	if _, ok := g.musicPlayerCh[g.curAudio]; ok {
+		select {
+		case p := <-g.musicPlayerCh[g.curAudio]:
+			g.musicPlayer[g.curAudio] = p
+		case err := <-g.errCh:
 			return err
+		default:
+		}
+
+		if g.musicPlayer[g.curAudio] != nil {
+			if err := g.musicPlayer[g.curAudio].update(g); err != nil {
+				return err
+			}
+		}
+	}
+
+	for _, sfx := range g.curSoundEffects {
+		if _, ok := g.musicPlayerCh[sfx]; ok {
+			select {
+			case p := <-g.musicPlayerCh[sfx]:
+				g.musicPlayer[sfx] = p
+			case err := <-g.errCh:
+				return err
+			default:
+			}
+
+			if g.musicPlayer[sfx] != nil {
+				if err := g.musicPlayer[sfx].update(g); err != nil {
+					return err
+				}
+			}
 		}
 	}
 
@@ -143,6 +189,13 @@ func (ap *AudioPlayer) update(g *Game) error {
 	return nil
 }
 
+func (ap *AudioPlayer) update_as_effect(g *Game) error {
+	if ap.audioPlayer.IsPlaying() {
+		ap.current = ap.audioPlayer.Position()
+	}
+	return nil
+}
+
 func (g *Game) play_audio(key string) {
 	m, ok := g.audio[g.curAudio]
 	if ok {
@@ -154,19 +207,41 @@ func (g *Game) play_audio(key string) {
 	m = g.audio[key]
 
 	g.curAudio = key
-	g.musicPlayer = m
+	g.musicPlayer[key] = m
 
-	err := g.musicPlayer.audioPlayer.Rewind()
+	err := g.musicPlayer[key].audioPlayer.Rewind()
 	if err != nil {
 		log.Fatal(err)
 	}
-	g.musicPlayer.audioPlayer.Play()
+	g.musicPlayer[key].audioPlayer.Play()
+}
+
+func (g *Game) play_effect(key string) {
+	m, ok := g.soundEffects[g.curAudio]
+	if ok {
+		if m.audioPlayer.IsPlaying() {
+			m.audioPlayer.Pause()
+		}
+	}
+
+	m = g.soundEffects[key]
+
+	if !slices.Contains(g.curSoundEffects, key) {
+		g.curSoundEffects = append(g.curSoundEffects, key)
+	}
+	g.musicPlayer[key] = m
+
+	err := g.musicPlayer[key].audioPlayer.Rewind()
+	if err != nil {
+		log.Fatal(err)
+	}
+	g.musicPlayer[key].audioPlayer.Play()
 }
 
 func (g *Game) init_audio() error {
 	audioContext := audio.NewContext(sampleRate)
 
-	g.musicPlayerCh = make(chan *AudioPlayer)
+	g.musicPlayerCh = make(map[string]chan *AudioPlayer)
 	g.errCh = make(chan error)
 
 	g.ctx = audioContext

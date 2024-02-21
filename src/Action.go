@@ -7,10 +7,12 @@ func pickup_ammo(g *Game) {
 	if g.player.weapon.curMag > g.player.weapon.mag {
 		g.player.weapon.curMag = g.player.weapon.mag
 	}
+	g.play_effect("pickup")
 }
 
 func pickup_cosmium(g *Game) {
 	g.player.inventory = append(g.player.inventory, InvItem{"Cosmium", g.images["cosmium"]})
+	g.play_effect("pickup")
 }
 
 func rid_cosmium(g *Game) {
@@ -28,4 +30,5 @@ func rid_cosmium(g *Game) {
 			}
 		}
 	}
+	g.play_effect("trigger")
 }

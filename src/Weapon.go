@@ -43,7 +43,7 @@ func (w *Weapon) draw(g *Game, screen *ebiten.Image) {
 	screen.DrawImage(img, &op)
 }
 
-func (w *Weapon) shoot(p *Player, enemies []*Enemy, bosses []*Boss, tiles []Tile) {
+func (w *Weapon) shoot(p *Player, enemies []*Enemy, bosses []*Boss, tiles []Tile) bool {
 	var e *Enemy
 	var b *Boss
 	var dx, dy, dis, angle float64
@@ -82,7 +82,7 @@ func (w *Weapon) shoot(p *Player, enemies []*Enemy, bosses []*Boss, tiles []Tile
 
 		if angle < w.bulletSize || angle > 360-w.bulletSize {
 			b.health -= w.damage
-			return
+			return true
 		}
 	}
 
@@ -116,7 +116,8 @@ func (w *Weapon) shoot(p *Player, enemies []*Enemy, bosses []*Boss, tiles []Tile
 
 		if angle < w.bulletSize || angle > 360-w.bulletSize {
 			e.health -= w.damage
-			return
+			return true
 		}
 	}
+	return false
 }

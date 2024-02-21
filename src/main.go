@@ -28,12 +28,14 @@ type Game struct {
 	menu                  Menu
 
 	// Audio
-	ctx           *audio.Context
-	musicPlayer   *AudioPlayer
-	musicPlayerCh chan *AudioPlayer
-	errCh         chan error
-	audio         map[string]*AudioPlayer
-	curAudio      string
+	ctx             *audio.Context
+	musicPlayer     map[string]*AudioPlayer
+	musicPlayerCh   map[string]chan *AudioPlayer
+	errCh           chan error
+	audio           map[string]*AudioPlayer
+	curAudio        string
+	soundEffects    map[string]*AudioPlayer
+	curSoundEffects []string
 }
 
 func (g *Game) Update() error {

@@ -46,7 +46,7 @@ func create_new_enemy(col, row int, w, h float64, images []*ebiten.Image, health
 func (e *Enemy) update(g *Game, tiles []Tile) {
 	if e.target != nil {
 		e.follow_target(tiles)
-		e.attack_target()
+		e.attack_target(g)
 	} else {
 		// If player close enough
 		if e.get_distance(g.player.x, g.player.y, true) < e.dov {
@@ -55,11 +55,13 @@ func (e *Enemy) update(g *Game, tiles []Tile) {
 	}
 }
 
-func (e *Enemy) attack_target() {
+func (e *Enemy) attack_target(g *Game) {
 	if e.get_distance(e.target.x, e.target.y, true) < e.attackRange {
 		e.attackCooldown--
 		if e.attackCooldown == 0 {
 			e.target.health -= e.damage
+
+			g.play_effect("playerHurt")
 
 			// Attempt to kill
 			if e.target.health <= 0 {
@@ -187,6 +189,8 @@ func (g *Game) kull_enemies() {
 		e = g.levels[g.player.curLevel].enemies[i]
 		if e.health > 0 {
 			aliveEnemies = append(aliveEnemies, i)
+		} else {
+			g.play_effect("enemyDeath")
 		}
 	}
 	newEnemies := make([]*Enemy, len(aliveEnemies))
