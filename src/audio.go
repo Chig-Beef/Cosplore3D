@@ -39,6 +39,24 @@ func (g *Game) load_audio() error {
 	if err := g.load_track("Enikoko", "enikoko"); err != nil {
 		return err
 	}
+	if err := g.load_track("enemyDeath", "enemyDeath"); err != nil {
+		return err
+	}
+	if err := g.load_track("enemyHurt", "enemyHurt"); err != nil {
+		return err
+	}
+	if err := g.load_track("pickup", "pickup"); err != nil {
+		return err
+	}
+	if err := g.load_track("playerHurt", "playerHurt"); err != nil {
+		return err
+	}
+	if err := g.load_track("shoot", "shoot"); err != nil {
+		return err
+	}
+	if err := g.load_track("trigger", "trigger"); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -145,7 +163,7 @@ func (g *Game) play_audio(key string) {
 	g.musicPlayer.audioPlayer.Play()
 }
 
-func (g *Game) init_audio() {
+func (g *Game) init_audio() error {
 	audioContext := audio.NewContext(sampleRate)
 
 	g.musicPlayerCh = make(chan *AudioPlayer)
@@ -153,5 +171,7 @@ func (g *Game) init_audio() {
 
 	g.ctx = audioContext
 
-	g.load_audio()
+	err := g.load_audio()
+
+	return err
 }

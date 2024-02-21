@@ -135,7 +135,9 @@ func main() {
 
 	g.levels = load_levels(g, tileSize)
 
-	g.init_audio()
+	if err := g.init_audio(); err != nil {
+		log.Fatal(err)
+	}
 
 	g.menu = Menu{
 		[]*Button{
