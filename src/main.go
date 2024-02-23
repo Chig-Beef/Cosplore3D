@@ -28,6 +28,7 @@ type Game struct {
 	menu                  Menu
 	settings              Setting
 	sensitivity           float64
+	difficulty            float64
 
 	// Audio
 	ctx             *audio.Context
@@ -163,6 +164,7 @@ func main() {
 			"fov": {"90", "FOV: ", 0, screenWidth / 15 * 3, screenWidth / 5, screenHeight / 14, color.RGBA{32, 32, 32, 255}, color.White, false},
 			"dov": {"30", "DOV: ", 0, screenWidth / 15 * 4, screenWidth / 5, screenHeight / 14, color.RGBA{32, 32, 32, 255}, color.White, false},
 			"sen": {"100", "SENSITIVITY: ", 0, screenWidth / 15 * 5, screenWidth / 5, screenHeight / 14, color.RGBA{32, 32, 32, 255}, color.White, false},
+			"dif": {"100", "DIFFICULTY: ", 0, screenWidth / 15 * 6, screenWidth / 5, screenHeight / 14, color.RGBA{32, 32, 32, 255}, color.White, false},
 		},
 	}
 

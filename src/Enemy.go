@@ -24,7 +24,7 @@ type Enemy struct {
 	attackCooldown uint8
 }
 
-func create_new_enemy(col, row int, w, h float64, images []*ebiten.Image, health, speed, damage float64, roa uint8, dov, attackRange float64) *Enemy {
+func create_new_enemy(g *Game, col, row int, w, h float64, images []*ebiten.Image, health, speed, damage float64, roa uint8, dov, attackRange float64) *Enemy {
 	return &Enemy{
 		tileSize * (float64(col) + 0.5),
 		tileSize * (float64(row) + 0.5),
@@ -41,6 +41,15 @@ func create_new_enemy(col, row int, w, h float64, images []*ebiten.Image, health
 		attackRange,
 		roa,
 	}
+}
+
+func (e *Enemy) set_difficulty(d float64) {
+	e.health *= d
+	e.speed *= d
+	e.damage *= d
+	e.roa = uint8(float64(e.roa) / d)
+	e.dov *= d
+	e.attackRange *= d
 }
 
 func (e *Enemy) update(g *Game, tiles []Tile) {

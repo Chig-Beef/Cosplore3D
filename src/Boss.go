@@ -30,7 +30,7 @@ type Boss struct {
 
 type Power func(*Game, *Boss)
 
-func create_new_boss(col, row int, w, h float64, images []*ebiten.Image, health, speed, damage float64, roa uint8, dov, attackRange float64, power Power, rop uint8) *Boss {
+func create_new_boss(g *Game, col, row int, w, h float64, images []*ebiten.Image, health, speed, damage float64, roa uint8, dov, attackRange float64, power Power, rop uint8) *Boss {
 	return &Boss{
 		tileSize * (float64(col) + 0.5),
 		tileSize * (float64(row) + 0.5),
@@ -51,6 +51,16 @@ func create_new_boss(col, row int, w, h float64, images []*ebiten.Image, health,
 		rop,
 		true,
 	}
+}
+
+func (b *Boss) set_difficulty(d float64) {
+	b.health *= d
+	b.speed *= d
+	b.damage *= d
+	b.roa = uint8(float64(b.roa) / d)
+	b.rop = uint8(float64(b.rop) / d)
+	b.dov *= d
+	b.attackRange *= d
 }
 
 func (b *Boss) update(g *Game, tiles []Tile) {
@@ -223,6 +233,7 @@ func change_visibility(g *Game, b *Boss) {
 
 func spawn_crawler(g *Game, b *Boss) {
 	g.levels[g.player.curLevel].enemies = append(g.levels[g.player.curLevel].enemies, create_new_enemy(
+		g,
 		int(b.x/tileSize),
 		int(b.y/tileSize),
 		100,

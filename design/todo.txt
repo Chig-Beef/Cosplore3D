@@ -1,4 +1,7 @@
-Add enemies
-Art for navigation
-HUD Art
-Enemy Art
+Implement settings page
+Create an ending
+Create soundtrack for each level
+Add a new weapon
+Implement bunny hop, wall sliding
+Enhance visuals (low health effect, maybe death log, bobbing)
+Cleanup

@@ -149,6 +149,7 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 				case 40: // Blob
 					code = 0
 					enemies = append(enemies, create_new_enemy(
+						g,
 						col,
 						row,
 						100,
@@ -170,6 +171,7 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 				case 41: // Infected Crewmate
 					code = 0
 					enemies = append(enemies, create_new_enemy(
+						g,
 						col,
 						row,
 						100,
@@ -191,6 +193,7 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 				case 42: // Trash Crawler
 					code = 0
 					enemies = append(enemies, create_new_enemy(
+						g,
 						col,
 						row,
 						100,
@@ -212,6 +215,7 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 				case 43: // Enikoko Beast
 					code = 0
 					bosses = append(bosses, create_new_boss(
+						g,
 						col,
 						row,
 						200,
@@ -235,6 +239,7 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 				case 44: // Crawler Champion
 					code = 0
 					bosses = append(bosses, create_new_boss(
+						g,
 						col,
 						row,
 						250,
@@ -455,5 +460,19 @@ func (g *Game) open_level(levelName string) {
 		if rawDOV >= 20 && rawDOV <= 500 {
 			g.sensitivity = float64(rawSense) / 100.0
 		}
+	}
+
+	rawDif, err := strconv.Atoi(g.settings.textBoxes["dif"].text)
+	if err == nil {
+		if rawDOV >= 1 && rawDOV <= 1_000 {
+			g.difficulty = float64(rawDif) / 100.0
+		}
+	}
+
+	for _, enemy := range g.levels[levelName].enemies {
+		enemy.set_difficulty(g.difficulty)
+	}
+	for _, boss := range g.levels[levelName].bosses {
+		boss.set_difficulty(g.difficulty)
 	}
 }
