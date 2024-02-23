@@ -26,6 +26,8 @@ type Game struct {
 	curMousePos           [2]int
 	prevMousePos          [2]int
 	menu                  Menu
+	settings              Setting
+	sensitivity           float64
 
 	// Audio
 	ctx             *audio.Context
@@ -60,6 +62,8 @@ func (g *Game) Update() error {
 
 	if g.player.curLevel == "menu" {
 		g.menu.update(g)
+	} else if g.player.curLevel == "settings" {
+		g.settings.update(g)
 	} else {
 		for i := 0; i < len(g.levels[g.player.curLevel].enemies); i++ {
 			g.levels[g.player.curLevel].enemies[i].update(g, g.levels[g.player.curLevel].get_solid_tiles())
@@ -79,14 +83,17 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	if g.player.curLevel == "menu" {
+	switch g.player.curLevel {
+	case "menu":
 		g.menu.draw(screen, g)
-		return
+	case "settings":
+		g.settings.draw(screen, g)
+	default:
+		g.levels[g.player.curLevel].draw_floor_sky(screen)
+		g.player.draw(g, screen)
+		g.levels[g.player.curLevel].draw_items_enemies_and_bosses(screen, g.player.camera)
+		g.player.draw_hud(g, screen)
 	}
-	g.levels[g.player.curLevel].draw_floor_sky(screen)
-	g.player.draw(g, screen)
-	g.levels[g.player.curLevel].draw_items_enemies_and_bosses(screen, g.player.camera)
-	g.player.draw_hud(g, screen)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
@@ -144,7 +151,18 @@ func main() {
 	g.menu = Menu{
 		[]*Button{
 			{0, screenWidth / 15 * 2, screenWidth / 5, screenHeight / 14, color.RGBA{32, 32, 32, 255}, color.White, "Play", start_game},
-			{0, screenWidth / 15 * 3, screenWidth / 5, screenHeight / 14, color.RGBA{32, 32, 32, 255}, color.White, "Settings", start_game},
+			{0, screenWidth / 15 * 3, screenWidth / 5, screenHeight / 14, color.RGBA{32, 32, 32, 255}, color.White, "Settings", open_settings},
+		},
+	}
+
+	g.settings = Setting{
+		[]*Button{
+			{0, screenWidth / 15 * 2, screenWidth / 5, screenHeight / 14, color.RGBA{32, 32, 32, 255}, color.White, "Menu", open_menu},
+		},
+		map[string]*TextBox{
+			"fov": {"90", "FOV: ", 0, screenWidth / 15 * 3, screenWidth / 5, screenHeight / 14, color.RGBA{32, 32, 32, 255}, color.White, false},
+			"dov": {"30", "DOV: ", 0, screenWidth / 15 * 4, screenWidth / 5, screenHeight / 14, color.RGBA{32, 32, 32, 255}, color.White, false},
+			"sen": {"100", "SENSITIVITY: ", 0, screenWidth / 15 * 5, screenWidth / 5, screenHeight / 14, color.RGBA{32, 32, 32, 255}, color.White, false},
 		},
 	}
 

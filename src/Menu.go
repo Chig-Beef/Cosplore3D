@@ -16,7 +16,7 @@ func (m *Menu) update(g *Game) {
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButton0) {
 		for i := 0; i < len(m.buttons); i++ {
 			if m.buttons[i].check_click(float64(g.curMousePos[0]), float64(g.curMousePos[1])) {
-				m.buttons[i].onClick(g, m)
+				m.buttons[i].onClick(g)
 				break
 			}
 		}

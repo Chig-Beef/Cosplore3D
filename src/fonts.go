@@ -46,4 +46,14 @@ func (g *Game) load_fonts() {
 		log.Fatal(err)
 	}
 	g.fonts["btnText"] = mplusNormalFont
+
+	mplusNormalFont, err = opentype.NewFace(tt, &opentype.FaceOptions{
+		Size:    screenHeight / 14,
+		DPI:     dpi,
+		Hinting: font.HintingVertical,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	g.fonts["textBox"] = mplusNormalFont
 }

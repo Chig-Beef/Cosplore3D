@@ -435,4 +435,25 @@ func (g *Game) open_level(levelName string) {
 	ebiten.SetCursorMode(ebiten.CursorModeCaptured)
 
 	g.play_audio(g.levels[levelName].audio)
+
+	rawFOV, err := strconv.Atoi(g.settings.textBoxes["fov"].text)
+	if err == nil {
+		if rawFOV >= 30 && rawFOV <= 150 {
+			g.player.camera.fov = float64(rawFOV)
+		}
+	}
+
+	rawDOV, err := strconv.Atoi(g.settings.textBoxes["dov"].text)
+	if err == nil {
+		if rawDOV >= 5 && rawDOV <= 100 {
+			g.player.camera.dov = float64(rawDOV * tileSize)
+		}
+	}
+
+	rawSense, err := strconv.Atoi(g.settings.textBoxes["sen"].text)
+	if err == nil {
+		if rawDOV >= 20 && rawDOV <= 500 {
+			g.sensitivity = float64(rawSense) / 100.0
+		}
+	}
 }

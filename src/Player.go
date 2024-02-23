@@ -25,7 +25,7 @@ type Player struct {
 }
 
 func (p *Player) update(g *Game) {
-	p.angle += float64(g.curMousePos[0]-g.prevMousePos[0]) * p.haste / 10.0
+	p.angle += float64(g.curMousePos[0]-g.prevMousePos[0]) * p.haste / 10.0 * g.sensitivity
 
 	nx := p.x
 	ny := p.y
