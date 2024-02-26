@@ -23,7 +23,7 @@ func (w *Weapon) update() {
 	}
 }
 
-func (w *Weapon) draw(g *Game, screen *ebiten.Image) {
+func (w *Weapon) draw(g *Game, screen *ebiten.Image, z float64) {
 	var img *ebiten.Image
 	if w.animationCounter == 0 {
 		img = w.image
@@ -38,7 +38,7 @@ func (w *Weapon) draw(g *Game, screen *ebiten.Image) {
 	op := ebiten.DrawImageOptions{}
 	op.GeoM.Scale(sW, sH)
 
-	op.GeoM.Translate(screenWidth/2.0-(sW*float64(ogW))/2.0, screenHeight/8.0*7-sH*float64(ogH))
+	op.GeoM.Translate(screenWidth/2.0-(sW*float64(ogW))/2.0, screenHeight/8.0*7-sH*float64(ogH)+z)
 
 	screen.DrawImage(img, &op)
 }

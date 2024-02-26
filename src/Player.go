@@ -12,16 +12,18 @@ import (
 )
 
 type Player struct {
-	x         float64
-	y         float64
-	angle     float64
-	camera    *Camera
-	curLevel  string
-	speed     float64
-	haste     float64
-	health    float64
-	weapon    Weapon
-	inventory []InvItem
+	x          float64
+	y          float64
+	z          float64
+	angle      float64
+	camera     *Camera
+	curLevel   string
+	speed      float64
+	haste      float64
+	health     float64
+	weapon     Weapon
+	inventory  []InvItem
+	bobCounter uint8
 }
 
 func (p *Player) update(g *Game) {
@@ -32,29 +34,43 @@ func (p *Player) update(g *Game) {
 	rx := p.x
 	ry := p.y
 
+	isMoving := false
+
 	if ebiten.IsKeyPressed(ebiten.KeyW) {
 		nx += math.Cos(to_radians(p.angle)) * p.speed
 		ny += math.Sin(to_radians(p.angle)) * p.speed
 		rx += math.Cos(to_radians(p.angle)) * p.speed * 2
 		ry += math.Sin(to_radians(p.angle)) * p.speed * 2
+		isMoving = true
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyS) {
 		nx -= math.Cos(to_radians(p.angle)) * p.speed
 		ny -= math.Sin(to_radians(p.angle)) * p.speed
 		rx -= math.Cos(to_radians(p.angle)) * p.speed * 2
 		ry -= math.Sin(to_radians(p.angle)) * p.speed * 2
+		isMoving = true
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyA) {
 		nx += math.Cos(to_radians(p.angle-90)) * p.speed
 		ny += math.Sin(to_radians(p.angle-90)) * p.speed
 		rx += math.Cos(to_radians(p.angle-90)) * p.speed * 2
 		ry += math.Sin(to_radians(p.angle-90)) * p.speed * 2
+		isMoving = true
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyD) {
 		nx -= math.Cos(to_radians(p.angle-90)) * p.speed
 		ny -= math.Sin(to_radians(p.angle-90)) * p.speed
 		rx -= math.Cos(to_radians(p.angle-90)) * p.speed * 2
 		ry -= math.Sin(to_radians(p.angle-90)) * p.speed * 2
+		isMoving = true
+	}
+
+	if isMoving {
+		p.bobCounter += 5
+		if p.bobCounter > 180 {
+			p.bobCounter = 0
+		}
+		p.z = (math.Sin(to_radians(float64(p.bobCounter))) + 0.5) * 15
 	}
 
 	hit := false
@@ -112,7 +128,7 @@ func (p *Player) draw(g *Game, screen *ebiten.Image) {
 }
 
 func (p *Player) draw_hud(g *Game, screen *ebiten.Image) {
-	p.weapon.draw(g, screen)
+	p.weapon.draw(g, screen, p.z)
 
 	ebitenutil.DrawRect(screen, 0, float64(screenHeight)/8.0*7, screenWidth, float64(screenHeight)/8.0, color.Gray{128})
 

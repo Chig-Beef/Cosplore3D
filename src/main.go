@@ -134,6 +134,7 @@ func main() {
 		tileSize * 3.5,
 		tileSize * 3.5,
 		0,
+		0,
 		&camera,
 		"menu",
 		10,
@@ -141,6 +142,7 @@ func main() {
 		100,
 		weapon,
 		[]InvItem{},
+		0,
 	}
 
 	g.levels = load_levels(g, tileSize)
