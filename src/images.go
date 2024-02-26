@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
+	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -10,52 +12,26 @@ import (
 func (g *Game) load_images() {
 	g.images = make(map[string]*ebiten.Image)
 
-	// Enemies
-	g.load_image("blob1", "blobFront")
-	g.load_image("blob2", "blobRight")
-	g.load_image("blob3", "blobBack")
-	g.load_image("blob4", "blobLeft")
-	g.load_image("crewmate1", "crewmateFront")
-	g.load_image("crewmate2", "crewmateRight")
-	g.load_image("crewmate3", "crewmateBack")
-	g.load_image("crewmate4", "crewmateLeft")
-	g.load_image("crawler1", "crawlerFront")
-	g.load_image("crawler2", "crawlerRight")
-	g.load_image("crawler3", "crawlerBack")
-	g.load_image("crawler4", "crawlerLeft")
-	g.load_image("beast1", "beastFront")
-	g.load_image("beast2", "beastRight")
-	g.load_image("beast3", "beastBack")
-	g.load_image("beast4", "beastLeft")
-	g.load_image("champion1", "championFront")
-	g.load_image("champion2", "championRight")
-	g.load_image("champion3", "championBack")
-	g.load_image("champion4", "championLeft")
+	var imageData [][]string
+	rawImageData, err := os.ReadFile("assets/images/images.json")
+	if err != nil {
+		log.Fatal("couldn't load images")
+	}
 
-	// HUD
-	g.load_image("heart", "heart")
-	g.load_image("gun", "gun")
-	g.load_image("gunFire", "gunFire")
+	err = json.Unmarshal(rawImageData, &imageData)
+	if err != nil {
+		log.Fatal("failed to load `./assets/images/images.json`, file may have been tampered with, reinstall advised")
+	}
 
-	// Walls
-	g.load_image("cosplorerWall", "cosplorerWall")
-	g.load_image("ankaranWall", "ankaranWall")
-	g.load_image("cosplorerComputer", "cosplorerComputer")
-	g.load_image("cosplorerReactor", "cosplorerReactor")
-	g.load_image("cosplorerReactorEmpty", "cosplorerReactorEmpty")
-	g.load_image("enikokoWall", "enikokoWall")
-	g.load_image("schmeltoolWall", "schmeltoolWall")
-
-	// Items
-	g.load_image("cosmium", "cosmium")
-	g.load_image("ammo", "ammo")
-
-	// Other
-	g.load_image("planet", "planet")
+	for i := 0; i < len(imageData); i++ {
+		fName := imageData[i][0]
+		mName := imageData[i][1]
+		g.load_image(fName, mName)
+	}
 }
 
 func (g *Game) load_image(fName string, mName string) {
-	img, _, err := ebitenutil.NewImageFromFile("assets/images/" + fName + ".png")
+	img, _, err := ebitenutil.NewImageFromFile("assets/images/" + fName)
 	if err != nil {
 		log.Fatal(err)
 	}
