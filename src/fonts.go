@@ -6,6 +6,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
 	"golang.org/x/image/font"
 	"golang.org/x/image/font/opentype"
+	"golang.org/x/image/font/sfnt"
 )
 
 func (g *Game) load_fonts() {
@@ -17,43 +18,20 @@ func (g *Game) load_fonts() {
 	}
 
 	const dpi = 72
+	g.load_font("ammo", tt, dpi, screenHeight/8-20)
+	g.load_font("title", tt, dpi, screenHeight/8)
+	g.load_font("btnText", tt, dpi, screenHeight/12)
+	g.load_font("textBox", tt, dpi, screenHeight/14)
+}
+
+func (g *Game) load_font(mName string, tt *sfnt.Font, dpi float64, size float64) {
 	mplusNormalFont, err := opentype.NewFace(tt, &opentype.FaceOptions{
-		Size:    screenHeight/8 - 20,
+		Size:    size,
 		DPI:     dpi,
 		Hinting: font.HintingVertical,
 	})
 	if err != nil {
 		log.Fatal(err)
 	}
-	g.fonts["ammo"] = mplusNormalFont
-
-	mplusNormalFont, err = opentype.NewFace(tt, &opentype.FaceOptions{
-		Size:    screenHeight / 8,
-		DPI:     dpi,
-		Hinting: font.HintingVertical,
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
-	g.fonts["title"] = mplusNormalFont
-
-	mplusNormalFont, err = opentype.NewFace(tt, &opentype.FaceOptions{
-		Size:    screenHeight / 12,
-		DPI:     dpi,
-		Hinting: font.HintingVertical,
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
-	g.fonts["btnText"] = mplusNormalFont
-
-	mplusNormalFont, err = opentype.NewFace(tt, &opentype.FaceOptions{
-		Size:    screenHeight / 14,
-		DPI:     dpi,
-		Hinting: font.HintingVertical,
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
-	g.fonts["textBox"] = mplusNormalFont
+	g.fonts[mName] = mplusNormalFont
 }
