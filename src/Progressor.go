@@ -36,3 +36,7 @@ func has_cosmium(g *Game) bool {
 func has_no_cosmium(g *Game) bool {
 	return !has_cosmium(g)
 }
+
+func void_check(g *Game) bool {
+	return true
+}

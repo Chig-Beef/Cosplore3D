@@ -29,6 +29,7 @@ type Game struct {
 	settings              Setting
 	sensitivity           float64
 	difficulty            float64
+	ending                Ending
 
 	// Audio
 	ctx             *audio.Context
@@ -65,6 +66,8 @@ func (g *Game) Update() error {
 		g.menu.update(g)
 	} else if g.player.curLevel == "settings" {
 		g.settings.update(g)
+	} else if g.player.curLevel == "ending" {
+		g.ending.update()
 	} else {
 		for i := 0; i < len(g.levels[g.player.curLevel].enemies); i++ {
 			g.levels[g.player.curLevel].enemies[i].update(g, g.levels[g.player.curLevel].get_solid_tiles())
@@ -89,6 +92,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		g.menu.draw(screen, g)
 	case "settings":
 		g.settings.draw(screen, g)
+	case "ending":
+		g.ending.draw(screen)
 	default:
 		g.levels[g.player.curLevel].draw_floor_sky(screen)
 		g.player.draw(g, screen)
@@ -168,6 +173,15 @@ func main() {
 			"sen": {"100", "SENSITIVITY: ", 0, screenWidth / 15 * 5, screenWidth / 5, screenHeight / 14, color.RGBA{32, 32, 32, 255}, color.White, false},
 			"dif": {"100", "DIFFICULTY: ", 0, screenWidth / 15 * 6, screenWidth / 5, screenHeight / 14, color.RGBA{32, 32, 32, 255}, color.White, false},
 		},
+	}
+
+	g.ending = Ending{
+		[]*ebiten.Image{
+			g.images["ending0"],
+			g.images["ending1"],
+		},
+		0,
+		600,
 	}
 
 	ebiten.SetWindowSize(screenWidth, screenHeight)

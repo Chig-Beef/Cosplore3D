@@ -126,6 +126,16 @@ func load_levels(g *Game, tileSize float64) map[string]*Level {
 						has_cosmium,
 						"schmeltool",
 					})
+				case 23: // Progressor (Ending)
+					code = 0
+					progressors = append(progressors, Progressor{
+						tileSize * (float64(col)),
+						tileSize * (float64(row)),
+						tileSize,
+						tileSize,
+						void_check,
+						"ending",
+					})
 				case 30: // Ammo
 					code = 0
 					items = append(items, &Item{
@@ -416,6 +426,15 @@ func (l *Level) sort_items_by_distance(c *Camera) {
 
 func (g *Game) open_level(levelName string) {
 	g.player.curLevel = levelName
+
+	switch levelName {
+	case "ending":
+		return
+	case "settings":
+		return
+	case "menu":
+		return
+	}
 
 	if !g.hasLoadedImageColumns {
 		g.create_image_columns([]string{
