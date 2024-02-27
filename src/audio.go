@@ -32,11 +32,16 @@ type audioStream interface {
 }
 
 func (g *Game) load_audio() error {
+	g.musicPlayerCh = make(map[string]chan *AudioPlayer)
+	g.errCh = make(chan error)
 	g.audio = make(map[string]*AudioPlayer)
 	g.soundEffects = make(map[string]*AudioPlayer)
 	g.musicPlayer = make(map[string]*AudioPlayer)
 
 	if err := g.load_track("Ankaran", "ankaran"); err != nil {
+		return err
+	}
+	if err := g.load_track("Cosplorer", "cosplorer"); err != nil {
 		return err
 	}
 	if err := g.load_track("Enikoko", "enikoko"); err != nil {
@@ -138,7 +143,7 @@ func (g *Game) update_audio() error {
 			}
 
 			if g.musicPlayer[sfx] != nil {
-				if err := g.musicPlayer[sfx].update(g); err != nil {
+				if err := g.musicPlayer[sfx].update_as_effect(g); err != nil {
 					return err
 				}
 			}
@@ -240,10 +245,6 @@ func (g *Game) play_effect(key string) {
 
 func (g *Game) init_audio() error {
 	audioContext := audio.NewContext(sampleRate)
-
-	g.musicPlayerCh = make(map[string]chan *AudioPlayer)
-	g.errCh = make(chan error)
-
 	g.ctx = audioContext
 
 	err := g.load_audio()
