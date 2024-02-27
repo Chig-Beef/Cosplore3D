@@ -47,6 +47,9 @@ func (g *Game) load_audio() error {
 	if err := g.load_track("Enikoko", "enikoko"); err != nil {
 		return err
 	}
+	if err := g.load_track("Schmeltool", "schmeltool"); err != nil {
+		return err
+	}
 	if err := g.load_effect("enemyDeath", "enemyDeath"); err != nil {
 		return err
 	}
@@ -116,38 +119,38 @@ func (g *Game) load_effect(fName, mName string) error {
 }
 
 func (g *Game) update_audio() error {
-	if _, ok := g.musicPlayerCh[g.curAudio]; ok {
+	//if _, ok := g.musicPlayerCh[g.curAudio]; ok {
+	select {
+	case p := <-g.musicPlayerCh[g.curAudio]:
+		g.musicPlayer[g.curAudio] = p
+	case err := <-g.errCh:
+		return err
+	default:
+	}
+
+	if g.musicPlayer[g.curAudio] != nil {
+		if err := g.musicPlayer[g.curAudio].update(g); err != nil {
+			return err
+		}
+	}
+	//}
+
+	for _, sfx := range g.curSoundEffects {
+		//if _, ok := g.musicPlayerCh[sfx]; ok {
 		select {
-		case p := <-g.musicPlayerCh[g.curAudio]:
-			g.musicPlayer[g.curAudio] = p
+		case p := <-g.musicPlayerCh[sfx]:
+			g.musicPlayer[sfx] = p
 		case err := <-g.errCh:
 			return err
 		default:
 		}
 
-		if g.musicPlayer[g.curAudio] != nil {
-			if err := g.musicPlayer[g.curAudio].update(g); err != nil {
+		if g.musicPlayer[sfx] != nil {
+			if err := g.musicPlayer[sfx].update_as_effect(g); err != nil {
 				return err
 			}
 		}
-	}
-
-	for _, sfx := range g.curSoundEffects {
-		if _, ok := g.musicPlayerCh[sfx]; ok {
-			select {
-			case p := <-g.musicPlayerCh[sfx]:
-				g.musicPlayer[sfx] = p
-			case err := <-g.errCh:
-				return err
-			default:
-			}
-
-			if g.musicPlayer[sfx] != nil {
-				if err := g.musicPlayer[sfx].update_as_effect(g); err != nil {
-					return err
-				}
-			}
-		}
+		//}
 	}
 
 	return nil
