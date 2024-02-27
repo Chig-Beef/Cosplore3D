@@ -12,18 +12,20 @@ import (
 )
 
 type Player struct {
-	x          float64
-	y          float64
-	z          float64
-	angle      float64
-	camera     *Camera
-	curLevel   string
-	speed      float64
-	haste      float64
-	health     float64
-	weapon     Weapon
-	inventory  []InvItem
-	bobCounter uint8
+	x              float64
+	y              float64
+	z              float64
+	angle          float64
+	camera         *Camera
+	curLevel       string
+	speed          float64
+	haste          float64
+	health         float64
+	weapon         *Weapon
+	weapons        []*Weapon
+	curWeaponIndex int
+	inventory      []InvItem
+	bobCounter     uint8
 }
 
 func (p *Player) update(g *Game) {
@@ -63,6 +65,14 @@ func (p *Player) update(g *Game) {
 		rx -= math.Cos(to_radians(p.angle-90)) * p.speed * 2
 		ry -= math.Sin(to_radians(p.angle-90)) * p.speed * 2
 		isMoving = true
+	}
+
+	if inpututil.IsKeyJustPressed(ebiten.KeyE) {
+		p.curWeaponIndex++
+		if p.curWeaponIndex == len(p.weapons) {
+			p.curWeaponIndex = 0
+		}
+		p.weapon = p.weapons[p.curWeaponIndex]
 	}
 
 	if isMoving {
@@ -151,7 +161,7 @@ func (p *Player) draw_hud(g *Game, screen *ebiten.Image) {
 		screen.DrawImage(heartImg, &op)
 	}
 
-	text.Draw(screen, strconv.Itoa(int(p.weapon.curMag))+"/"+strconv.Itoa(int(p.weapon.mag)), g.fonts["ammo"], screenWidth/2.0, screenHeight-10, color.RGBA{196, 32, 32, 255})
+	text.Draw(screen, strconv.Itoa(int(p.weapon.curMag))+"/"+strconv.Itoa(int(p.weapon.mag))+": "+p.weapon.name, g.fonts["ammo"], screenWidth/3.2, screenHeight-10, color.RGBA{196, 32, 32, 255})
 
 	for i := 0; i < len(p.inventory); i++ {
 		p.inventory[i].draw(screen, float64(screenWidth/2+200+i*60), float64(screenHeight)/8.0*7+10)

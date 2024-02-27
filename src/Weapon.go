@@ -7,8 +7,10 @@ import (
 )
 
 type Weapon struct {
+	name             string
 	damage           float64
-	rof              uint8   // Rate Of Fire - How many frames between shots
+	rof              uint8 // Rate Of Fire - How many frames between shots
+	rofCounter       uint8
 	mag              uint8   // Magazine - How many bullets the weapon can hold
 	curMag           uint8   // How many bullets left
 	bulletSize       float64 // How large of an area the weapon can hit
@@ -20,6 +22,9 @@ type Weapon struct {
 func (w *Weapon) update() {
 	if w.animationCounter > 0 {
 		w.animationCounter--
+	}
+	if w.rofCounter > 0 {
+		w.rofCounter--
 	}
 }
 
@@ -47,6 +52,12 @@ func (w *Weapon) shoot(p *Player, enemies []*Enemy, bosses []*Boss, tiles []Tile
 	var e *Enemy
 	var b *Boss
 	var dx, dy, dis, angle float64
+
+	if w.rofCounter > 0 {
+		return false
+	}
+
+	w.rofCounter = w.rof
 
 	w.curMag--
 

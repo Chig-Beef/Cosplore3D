@@ -124,8 +124,23 @@ func main() {
 		30 * tileSize,
 	}
 
-	weapon := Weapon{
+	weapon1 := Weapon{
+		"Energy Blaster",
 		10,
+		5,
+		5,
+		100,
+		100,
+		10,
+		g.images["gun"],
+		g.images["gunFire"],
+		0,
+	}
+
+	weapon2 := Weapon{
+		"Rocket Launcher",
+		100,
+		60,
 		60,
 		10,
 		10,
@@ -145,7 +160,9 @@ func main() {
 		10,
 		3,
 		100,
-		weapon,
+		&weapon1,
+		[]*Weapon{&weapon1, &weapon2},
+		0,
 		[]InvItem{},
 		0,
 	}
